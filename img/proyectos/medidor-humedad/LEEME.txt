@@ -1,0 +1,13 @@
+﻿Carpeta del prototipo: medidor-humedad
+
+Pon aqui las fotos con estos nombres (la extension puede ser .jpg, .jpeg, .png o .webp):
+
+  portada.jpg       foto del prototipo terminado
+  diagrama.png      diagrama de conexiones (Tinkercad o dibujo)
+  evidencia-1.jpg   foto del proceso 1
+  evidencia-2.jpg   foto del proceso 2
+  evidencia-3.jpg   foto del proceso 3
+
+El texto que acompana cada evidencia se escribe en js/proyectos.js (campo "evidencias").
+Si agregas mas fotos (evidencia-4.jpg...), agrega tambien su texto en esa lista.
+Mientras no haya foto, la pagina muestra una imagen de relleno.

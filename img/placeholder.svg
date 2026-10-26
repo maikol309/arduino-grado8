@@ -1,0 +1,7 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Imagen pendiente">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16213E"/><stop offset="1" stop-color="#0d4d57"/></linearGradient></defs>
+  <rect width="800" height="500" fill="url(#g)"/>
+  <g fill="none" stroke="#00D9FF" stroke-opacity=".35" stroke-width="2"><path d="M60 120h180v80h120M740 380H560v-70H440M120 440v-90h130"/><circle cx="240" cy="120" r="5"/><circle cx="560" cy="380" r="5"/></g>
+  <g fill="none" stroke="#00D9FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="330" y="170" width="140" height="110" rx="14"/><circle cx="400" cy="225" r="26"/><path d="M360 170l14-22h52l14 22"/></g>
+  <text x="400" y="340" fill="#9fb4c8" font-family="monospace" font-size="22" text-anchor="middle">Imagen pendiente</text>
+</svg>

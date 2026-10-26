@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lógica de programación con Arduino · Grado 8° · I.E. José Cayetano Vásquez</title>
+<meta name="description" content="Página de evidencias del proyecto de aula: fortalecimiento de la lógica de programación mediante el diseño de prototipos con Arduino en grado octavo. I.E. Técnica José Cayetano Vásquez, Ciénega, Boyacá.">
+
+<!-- ====== Tipografías (Google Fonts) ====== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Open+Sans:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/styles.css">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<!-- ============================================================
+     PANTALLA DE CARGA
+     ============================================================ -->
+<div class="loader" id="loader" role="status" aria-label="Cargando la página">
+  <div class="loader__chip">
+    <span class="loader__pin"></span><span class="loader__pin"></span>
+    <span class="loader__pin"></span><span class="loader__pin"></span>
+    <div class="loader__core">∞</div>
+  </div>
+  <p class="loader__text">Compilando evidencias…</p>
+</div>
+
+<!-- Barra de progreso de lectura -->
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<!-- Cursor personalizado (se oculta solo en móvil / táctil) -->
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+
+<a class="skip-link" href="#sobre">Saltar al contenido</a>
+
+<!-- ============================================================
+     NAVEGACIÓN
+     ============================================================ -->
+<header class="nav" id="nav">
+  <a class="nav__brand" href="#inicio">
+    <span class="nav__mark">&lt;/&gt;</span>
+    <span class="nav__brandtext">Arduino&nbsp;8°</span>
+  </a>
+
+  <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu" aria-label="Abrir menú">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav class="nav__menu" id="navMenu" aria-label="Navegación principal">
+    <a href="#sobre">El proyecto</a>
+    <a href="#proyectos">Prototipos</a>
+    <a href="#proceso">Proceso</a>
+    <a href="#cifras">Cifras</a>
+    <a href="#galeria">Galería</a>
+    <button class="theme-btn" id="themeBtn" aria-label="Cambiar a modo claro" title="Cambiar tema">
+      <span class="theme-btn__icon">◐</span>
+    </button>
+  </nav>
+</header>
+
+<!-- ============================================================
+     1. HERO
+     ============================================================ -->
+<section class="hero" id="inicio">
+  <canvas class="hero__circuit" id="circuit" aria-hidden="true"></canvas>
+  <div class="hero__glow" aria-hidden="true"></div>
+
+  <div class="hero__inner">
+    <div class="hero__text">
+      <p class="hero__eyebrow">Proyecto de aula · Tecnología e Informática</p>
+
+      <!-- El texto se escribe con efecto máquina desde main.js -->
+      <h1 class="hero__title">
+        <span class="type" id="typeTarget" data-type="Fortalecimiento de la lógica de programación"></span><span class="caret" aria-hidden="true"></span>
+        <span class="hero__title-sub">mediante el diseño de prototipos con Arduino en grado octavo</span>
+      </h1>
+
+      <p class="hero__sub">Institución Educativa Técnica José Cayetano Vásquez · Ciénega, Boyacá</p>
+
+      <div class="hero__actions">
+        <a class="btn btn--glow" href="#proyectos">
+          <span class="btn__chip" aria-hidden="true"></span>
+          Explorar los prototipos
+        </a>
+        <a class="btn btn--orange" href="https://sites.google.com/uptc.edu.co/proyectodeaula8/" target="_blank" rel="noopener noreferrer">Contenido de la estrategia ↗</a>
+      </div>
+    </div>
+
+    <!-- ====== Placa Arduino UNO en CSS 3D ====== -->
+    <div class="board-stage" id="boardStage">
+      <!-- Modelo 3D real; si no carga, queda visible la placa en CSS de abajo -->
+      <model-viewer id="board3d" src="models/arduino-uno.glb"
+        alt="Modelo tridimensional de una placa Arduino UNO R3 que gira lentamente"
+        camera-orbit="35deg 62deg 105%" min-camera-orbit="auto 5deg 45%" max-camera-orbit="auto 120deg 140%"
+        field-of-view="30deg" interaction-prompt="none" disable-pan interaction-policy="allow-when-focused"
+        shadow-intensity="1.1" shadow-softness=".8" exposure="1.05" environment-image="neutral"
+        loading="eager" reveal="auto">
+        <div class="board3d__bar" slot="progress-bar"><span></span></div>
+      </model-viewer>
+      <div class="board" id="board" tabindex="0" role="img" aria-label="Modelo tridimensional de una placa Arduino UNO que gira lentamente">
+        <div class="board__face board__top">
+          <i class="hole hole--1"></i><i class="hole hole--2"></i>
+          <i class="hole hole--3"></i><i class="hole hole--4"></i>
+
+          <div class="blk usb" data-h="11"></div>
+          <div class="blk jack" data-h="10"></div>
+          <div class="blk reset" data-h="4"></div>
+          <div class="blk mcu2" data-h="2"></div>
+          <div class="blk xtal" data-h="3"></div>
+          <div class="blk cap cap--1" data-h="8"></div>
+          <div class="blk cap cap--2" data-h="8"></div>
+          <div class="blk reg" data-h="4"></div>
+          <div class="blk mcu" data-h="4">ATMEGA328P<br>16U2-AU</div>
+
+          <div class="blk hdr hdr--d1" data-h="8"></div>
+          <div class="blk hdr hdr--d2" data-h="8"></div>
+          <div class="blk hdr hdr--pw" data-h="8"></div>
+          <div class="blk hdr hdr--an" data-h="8"></div>
+          <div class="blk icsp icsp--a" data-h="5"></div>
+          <div class="blk icsp icsp--b" data-h="5"></div>
+
+          <span class="silk silk--d">DIGITAL (PWM~)</span>
+          <span class="silk silk--p">POWER</span>
+          <span class="silk silk--a">ANALOG IN</span>
+          <span class="silk silk--ic">ICSP</span>
+
+          <div class="board__brand">
+            <svg class="board__logo" viewBox="0 0 60 28" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true">
+              <path d="M30 14C26 7 20 4 14.5 4 8.5 4 4 8.4 4 14s4.500 10 10.500 10C20 24 26 21 30 14c4-7 10-10 15.500-10C51.500 4 56 8.400 56 14s-4.500 10-10.500 10C40 24 34 21 30 14Z"/>
+              <path d="M10 14h9M45.500 10v8M41.500 14h8" stroke-width="2.600"/>
+            </svg>
+            ARDUINO<small>UNO</small>
+          </div>
+
+          <div class="board__leds">
+            <i class="led led--on" data-led="L"></i>
+            <i class="led led--tx" data-led="TX"></i>
+            <i class="led led--rx" data-led="RX"></i>
+          </div>
+          <i class="led led--pwr" data-led="ON"></i>
+        </div>
+        <div class="board__face board__bottom"></div>
+        <div class="board__edge board__edge--n"></div>
+        <div class="board__edge board__edge--s"></div>
+        <div class="board__edge board__edge--e"></div>
+        <div class="board__edge board__edge--w"></div>
+      </div>
+      <div class="board__shadow" aria-hidden="true"></div>
+      <p class="board__hint">Mueve el cursor, arrástrala para girarla · clic y rueda para acercar</p>
+    </div>
+  </div>
+
+  <a class="hero__scroll" href="#sobre" aria-label="Bajar a la siguiente sección">
+    <span></span>
+  </a>
+</section>
+
+<!-- ============================================================
+     2. SOBRE EL PROYECTO
+     ============================================================ -->
+<section class="section" id="sobre">
+  <div class="wrap">
+    <h2 class="section__title reveal">Sobre el proyecto</h2>
+    <p class="section__lead reveal">
+      Los estudiantes de octavo ya sabían armar circuitos, pero el código lo copiaban sin
+      entenderlo. Este proyecto invierte el orden: primero la lógica, después el montaje.
+      Aquí quedan las evidencias de ese recorrido.
+    </p>
+
+    <div class="cards">
+      <article class="card reveal">
+        <div class="card__icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="16"/><circle cx="24" cy="24" r="8"/><circle cx="24" cy="24" r="2.5" class="fill"/></svg>
+        </div>
+        <h3>Objetivo</h3>
+        <p>Fortalecer la lógica de programación mediante el diseño de prototipos con Arduino en estudiantes de grado octavo de la Institución Educativa José Cayetano Vázquez de Ciénega, Boyacá.</p>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><path d="M24 8 L40 16 L24 24 L8 16 Z"/><path d="M8 24 L24 32 L40 24"/><path d="M8 32 L24 40 L40 32"/></svg>
+        </div>
+        <h3>Grado octavo</h3>
+        <p>25 estudiantes organizados en 11 grupos de dos a cuatro integrantes, cada uno responsable de un prototipo.</p>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><rect x="12" y="12" width="24" height="24" rx="3"/><path d="M18 6v6M30 6v6M18 36v6M30 36v6M6 18h6M6 30h6M36 18h6M36 30h6"/></svg>
+        </div>
+        <h3>Tecnología e Informática</h3>
+        <p>El área donde se cruza el pensamiento computacional con el trabajo manual del taller de robótica.</p>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><path d="M10 34 L20 24 L10 14"/><path d="M24 34h14"/><rect x="4" y="8" width="40" height="32" rx="4"/></svg>
+        </div>
+        <h3>Herramientas</h3>
+        <p>Tinkercad Circuits para simular, Arduino UNO y protoboard para construir, y el IDE de Arduino para cargar.</p>
+      </article>
+    </div>
+
+    <!-- ====== Ruta de aprendizaje: lo que se ha aprendido en cada sesión ====== -->
+    <div class="path reveal">
+      <div class="path__head">
+        <h3>Ruta de aprendizaje</h3>
+        <p>Cada sesión suma un concepto nuevo de programación. Hasta ahora llevamos <strong>4 de 6 sesiones</strong>.</p>
+        <div class="path__bar" role="img" aria-label="4 de 6 sesiones realizadas"><span style="--fill:67%"></span></div>
+      </div>
+
+      <ol class="path__steps">
+        <li class="step step--done">
+          <span class="step__dot" aria-hidden="true">0</span>
+          <p class="step__tag">Diagnóstico · 31 de agosto</p>
+          <h4>Dónde estaba el vacío</h4>
+          <p>Una prueba inicial y la observación en clase mostraron que seguían instrucciones, pero no podían explicarlas.</p>
+        </li>
+        <li class="step step--done">
+          <span class="step__dot" aria-hidden="true">1</span>
+          <p class="step__tag">Sesión 1</p>
+          <h4>Pensar antes de programar</h4>
+          <p>Algoritmos, diagramas de flujo y la primera variable: el tiempo que controla un LED.</p>
+          <code class="step__code">int tiempo = 1000;</code>
+        </li>
+        <li class="step step--done">
+          <span class="step__dot" aria-hidden="true">2</span>
+          <p class="step__tag">Sesión 2</p>
+          <h4>Escuchar y responder</h4>
+          <p>Arduino lee un pulsador y responde con un LED, cada par de forma independiente.</p>
+          <code class="step__code">digitalRead(pulsador);</code>
+        </li>
+        <li class="step step--done">
+          <span class="step__dot" aria-hidden="true">3</span>
+          <p class="step__tag">Sesión 3</p>
+          <h4>Decidir y repetir</h4>
+          <p>if / else y ciclos for para automatizar una secuencia de seis LED.</p>
+          <code class="step__code">for (int i = 2; i &lt;= 7; i++)</code>
+        </li>
+        <li class="step step--done">
+          <span class="step__dot" aria-hidden="true">4</span>
+          <p class="step__tag">Sesión 4</p>
+          <h4>Señales que cambian poco a poco</h4>
+          <p>Un potenciómetro y map() convierten valores de 0 a 1023 en una cortina de 12 LED.</p>
+          <code class="step__code">map(analogRead(A0), 0, 1023, 0, 6)</code>
+        </li>
+        <li class="step step--pending">
+          <span class="step__dot" aria-hidden="true">5</span>
+          <p class="step__tag">Sesión 5</p>
+          <h4>Próximamente</h4>
+        </li>
+        <li class="step step--pending">
+          <span class="step__dot" aria-hidden="true">6</span>
+          <p class="step__tag">Sesión 6</p>
+          <h4>Próximamente</h4>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     3. BIBLIOTECA DE PROYECTOS
+     ============================================================ -->
+<section class="section section--shelf" id="proyectos">
+  <div class="wrap">
+    <h2 class="section__title reveal">Los once prototipos</h2>
+    <p class="section__lead reveal">
+      Abre cada caja para ver el prototipo, quiénes lo construyeron y el código que lo hace funcionar.
+    </p>
+
+    <!-- Las cajas se generan desde js/proyectos.js -->
+    <div class="shelf" id="shelf"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     4. PROCESO DE APRENDIZAJE
+     ============================================================ -->
+<section class="section" id="proceso">
+  <div class="wrap">
+    <h2 class="section__title reveal">Sesión a sesión</h2>
+    <p class="section__lead reveal">
+      Siete semanas de intervención: un diagnóstico y seis sesiones. Hasta ahora se han realizado
+      el diagnóstico y las sesiones 1 a 4.
+    </p>
+    <a class="btn btn--orange btn--sm reveal" href="https://sites.google.com/uptc.edu.co/proyectodeaula8/" target="_blank" rel="noopener noreferrer">Contenido de la estrategia ↗</a>
+  </div>
+
+  <!-- Riel horizontal con desplazamiento -->
+  <div class="rail" id="rail" tabindex="0" aria-label="Línea de tiempo de las sesiones, desplázala horizontalmente">
+    <div class="rail__track">
+
+      <article class="week week--done">
+        <p class="week__num">Diagnóstico · 31 de agosto de 2026</p>
+        <h3>Prueba diagnóstica</h3>
+        <figure class="week__img" data-foto="img/sesiones/diagnostico" data-alt="Aplicación de la prueba diagnóstica"></figure>
+        <p>Se aplicó en una semana distinta a las demás, antes de comenzar las sesiones.</p>
+      </article>
+
+      <article class="week week--done">
+        <p class="week__num">Sesión 1 · 21 y 24 de septiembre de 2026</p>
+        <h3>Pensamiento lógico y programación</h3>
+        <figure class="week__img" data-foto="img/sesiones/sesion-1" data-alt="Estudiantes en la sesión 1"></figure>
+        <p>Algoritmos, diagramas de flujo y variables. Primer circuito en Tinkercad y reto del semáforo de emergencia.</p>
+        <ul class="week__chips"><li>4 horas</li><li>25 estudiantes</li></ul>
+        <a class="week__link" href="https://sites.google.com/uptc.edu.co/proyectodeaula8/sesion-1" target="_blank" rel="noopener noreferrer">Ver guía y presentación ↗</a>
+      </article>
+
+      <article class="week week--done">
+        <p class="week__num">Sesión 2 · 28 y 29 de septiembre de 2026</p>
+        <h3>Entradas y salidas digitales</h3>
+        <figure class="week__img" data-foto="img/sesiones/sesion-2" data-alt="Estudiantes en la sesión 2"></figure>
+        <p>pinMode, digitalWrite y digitalRead con dos LED y dos pulsadores independientes. Reto: un tercer par LED–pulsador.</p>
+        <ul class="week__chips"><li>4 horas</li><li>25 estudiantes</li></ul>
+        <a class="week__link" href="https://sites.google.com/uptc.edu.co/proyectodeaula8/sesion-2" target="_blank" rel="noopener noreferrer">Ver guía y presentación ↗</a>
+      </article>
+
+      <article class="week week--done">
+        <p class="week__num">Sesión 3 · 13 y 16 de octubre de 2026</p>
+        <h3>Condicionales y ciclos</h3>
+        <figure class="week__img" data-foto="img/sesiones/sesion-3" data-alt="Estudiantes en la sesión 3"></figure>
+        <p>if / else y ciclo for: una secuencia de seis LED de ida y vuelta, con videos explicativos. El viernes 16 hubo refuerzo con algunos estudiantes.</p>
+        <ul class="week__chips"><li>2 h el martes 13</li><li>3 h de refuerzo el viernes 16</li></ul>
+        <a class="week__link" href="https://sites.google.com/uptc.edu.co/proyectodeaula8/sesion-3" target="_blank" rel="noopener noreferrer">Ver guía y presentación ↗</a>
+      </article>
+
+      <article class="week week--done">
+        <p class="week__num">Sesión 4 · semana del 19 al 23 de octubre de 2026</p>
+        <h3>Entradas analógicas y map()</h3>
+        <figure class="week__img" data-foto="img/sesiones/sesion-4" data-alt="Estudiantes en la sesión 4"></figure>
+        <p>analogRead, Monitor Serie y map(): un potenciómetro controla una cortina de 12 LED.</p>
+        <ul class="week__chips"><li>3 horas</li></ul>
+        <a class="week__link" href="https://sites.google.com/uptc.edu.co/proyectodeaula8/sesion-4" target="_blank" rel="noopener noreferrer">Ver guía y presentación ↗</a>
+      </article>
+
+      <article class="week week--pending">
+        <p class="week__num">Sesión 5</p>
+        <h3>Próximamente</h3>
+        <span class="week__state">Por realizar</span>
+      </article>
+
+      <article class="week week--pending">
+        <p class="week__num">Sesión 6</p>
+        <h3>Próximamente</h3>
+        <span class="week__state">Por realizar</span>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     5. ESTADÍSTICAS
+     ============================================================ -->
+<section class="section section--stats" id="cifras">
+  <div class="wrap">
+    <h2 class="section__title reveal">En cifras</h2>
+
+    <div class="stats">
+      <div class="stat reveal">
+        <p class="stat__num" data-count="25">0</p>
+        <p class="stat__label">estudiantes participantes</p>
+        <div class="bar"><span style="--fill:100%"></span></div>
+      </div>
+      <div class="stat reveal">
+        <p class="stat__num" data-count="11">0</p>
+        <p class="stat__label">prototipos construidos</p>
+        <div class="bar"><span style="--fill:100%"></span></div>
+      </div>
+      <div class="stat reveal">
+        <p class="stat__num" data-count="7">0</p>
+        <p class="stat__label">semanas de intervención</p>
+        <div class="bar"><span style="--fill:100%"></span></div>
+      </div>
+      <div class="stat reveal">
+        <p class="stat__num" data-count="100" data-suffix="%">0</p>
+        <p class="stat__label">de participación</p>
+        <div class="ring" data-ring="100"><span>100%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     6. GALERÍA
+     ============================================================ -->
+<section class="section" id="galeria">
+  <div class="wrap">
+    <h2 class="section__title reveal">Galería del proceso</h2>
+
+    <div class="filters" id="filters" role="tablist" aria-label="Filtrar galería por etapa">
+      <button class="filter is-active" data-filter="todas" role="tab" aria-selected="true">Todas</button>
+      <button class="filter" data-filter="diagnostico" role="tab" aria-selected="false">Diagnóstico</button>
+      <button class="filter" data-filter="tinkercad" role="tab" aria-selected="false">Tinkercad</button>
+      <button class="filter" data-filter="arduino" role="tab" aria-selected="false">Arduino</button>
+      <button class="filter" data-filter="prototipos" role="tab" aria-selected="false">Prototipos</button>
+    </div>
+
+    <!-- La galería se genera desde js/proyectos.js (arreglo GALERIA) -->
+    <div class="gallery" id="gallery"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="footer">
+  <div class="wrap footer__grid">
+    <div>
+      <p class="footer__quote">La robótica educativa no se trata de que el robot funcione,<br>sino de que el estudiante sepa explicar por qué funciona.</p>
+    </div>
+    <div class="footer__meta">
+      <p><strong>Maicol Alexander Cruz Cruz</strong></p>
+      <p>Licenciatura en Informática · UPTC</p>
+      <p>I.E. Técnica José Cayetano Vásquez · Ciénega, Boyacá</p>
+      <p>2026</p>
+      <div class="social">
+        <a href="https://github.com/" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .26.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.77V21h-4v-5.5c0-1.31-.02-3-1.9-3-1.9 0-2.2 1.43-2.2 2.9V21H9z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+  <p class="footer__legal">Página de evidencias del proyecto de aula · Práctica pedagógica investigativa, UPTC</p>
+</footer>
+
+<!-- Botón volver arriba -->
+<button class="totop" id="toTop" aria-label="Volver arriba">↑</button>
+
+<!-- ============================================================
+     MODALES
+     ============================================================ -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+  <div class="modal__backdrop" data-close></div>
+  <div class="modal__box">
+    <button class="modal__close" data-close aria-label="Cerrar">×</button>
+    <h3 class="modal__title" id="modalTitle"></h3>
+    <div class="modal__body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Aviso emergente (copiar código) -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<script src="js/proyectos.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
+
+
+
+
+
+
