@@ -1,0 +1,138 @@
+INSTRUCCIONES DEL SITIO - Fortalecimiento de la logica de programacion con Arduino (Grado 8)
+=============================================================================================
+
+Este archivo explica como editar, probar y publicar la pagina de evidencias.
+El README.md es la presentacion del proyecto; aqui estan los pasos practicos.
+
+
+1. QUE CONTIENE LA CARPETA
+--------------------------
+index.html            Estructura de la pagina. Aqui se edita el texto de las secciones.
+css/styles.css        Estilos, colores y animaciones.
+js/proyectos.js       Datos de los 11 prototipos y de la galeria. Es el archivo que mas se edita.
+js/main.js            Interactividad: cajas de prototipos, acordeon de evidencias, filtros,
+                      resaltado del codigo, placa Arduino 3D.
+img/proyectos/<id>/   Fotos de cada prototipo (una carpeta por prototipo).
+img/sesiones/         Fotos de cada sesion.
+img/placeholder.svg   Imagen de relleno que se muestra mientras falta una foto.
+models/               Modelo 3D de la placa Arduino UNO (arduino-uno.glb).
+INSTRUCCIONES.txt     Este archivo.
+
+
+2. CAMBIAR LOS DATOS DE UN PROTOTIPO
+------------------------------------
+Abre js/proyectos.js con el Bloc de notas o Visual Studio Code. Cada prototipo se ve asi:
+
+  {
+    id: "caneca-automatica",
+    nombre: "Caneca basura automatica",
+    lema: "Se abre sola cuando te acercas",
+    categoria: "Sensor ultrasonico",
+    descripcion: "...",
+    integrantes: ["Nombre Apellido", "Nombre Apellido"],
+    componentes: ["Arduino UNO", "..."],
+    diagramaTexto: "Frase que presenta el diagrama de conexiones.",
+    evidencias: [ { titulo: "...", texto: "..." }, ... ],
+    codigo: `...codigo de Arduino...`
+  }
+
+Respeta las comillas y las comas. El codigo de Arduino va entre comillas invertidas ( ` ).
+Los comentarios dentro del codigo (lineas que empiezan con //) los escriben los estudiantes.
+
+
+3. PONER LAS FOTOS DE CADA PROTOTIPO
+------------------------------------
+Cada prototipo tiene su carpeta: img/proyectos/<id>/  (por ejemplo img/proyectos/caneca-automatica/).
+Guarda las fotos con estos nombres (sirve .jpg, .jpeg, .png o .webp):
+
+  portada.jpg        foto del prototipo terminado
+  diagrama.png       diagrama de conexiones
+  evidencia-1.jpg    foto del proceso 1
+  evidencia-2.jpg    foto del proceso 2
+  evidencia-3.jpg    foto del proceso 3
+
+El texto que aparece sobre cada evidencia se edita en js/proyectos.js, en la lista "evidencias".
+Si agregas mas fotos (evidencia-4.jpg ...), agrega tambien su texto en esa lista.
+Mientras falte una foto, la pagina muestra una imagen de relleno.
+
+
+4. PONER LAS FOTOS DE LAS SESIONES
+----------------------------------
+Guardalas en img/sesiones/ con estos nombres:
+
+  diagnostico.jpg, sesion-1.jpg, sesion-2.jpg, sesion-3.jpg, sesion-4.jpg
+
+Cuando se realicen las sesiones 5 y 6, se agregan sus fichas en index.html
+(seccion "Sesion a sesion", busca "Proximamente").
+
+
+5. GALERIA
+----------
+Al final de js/proyectos.js esta la lista GALERIA. Copia una linea y cambia la ruta,
+el texto alternativo y la categoria (diagnostico, tinkercad, arduino o prototipos).
+
+
+6. PROBAR LA PAGINA EN EL COMPUTADOR
+------------------------------------
+- Doble clic en index.html: se abre en el navegador. El modelo 3D de la placa NO carga con
+  doble clic (el navegador lo bloquea); en ese caso se ve la placa hecha en CSS.
+- Para ver el modelo 3D completo, publica en GitHub Pages (seccion 7) o abre la carpeta
+  con un servidor local.
+
+
+7. PUBLICAR EN GITHUB PAGES (usuario: maikol309)
+------------------------------------------------
+A. Crear el repositorio
+   1. Entra a github.com con la cuenta maikol309.
+   2. Boton "+" arriba a la derecha -> New repository.
+   3. Repository name: arduino-grado8 (sin espacios).
+   4. Marca Public.
+   5. No marques "Add a README file", ni .gitignore, ni licencia.
+   6. Create repository.
+
+B. Configurar Git (solo la primera vez en el computador)
+   Abre PowerShell y escribe:
+     git config --global user.name "Maicol.cruz"
+     git config --global user.email "TU-CORREO-NOREPLY-DE-GITHUB"
+   El correo noreply esta en GitHub: Settings -> Emails (tiene la forma
+   NUMERO+maikol309@users.noreply.github.com).
+
+C. Subir los archivos
+   En PowerShell, dentro de la carpeta del sitio:
+     git init
+     git add .
+     git commit -m "Primera version del sitio"
+     git branch -M main
+     git remote add origin https://github.com/maikol309/arduino-grado8.git
+     git push -u origin main
+   La primera vez se abre el navegador para iniciar sesion en GitHub.
+
+D. Activar GitHub Pages
+   1. En el repositorio: Settings -> Pages.
+   2. Source: Deploy from a branch.
+   3. Branch: main, carpeta / (root). Save.
+   4. Espera de 1 a 3 minutos y recarga.
+
+E. Direccion del sitio
+     https://maikol309.github.io/arduino-grado8/
+
+
+8. CUANDO HAGAS CAMBIOS
+-----------------------
+En PowerShell, dentro de la carpeta del sitio:
+     git add .
+     git commit -m "Descripcion del cambio"
+     git push
+GitHub Pages se actualiza en 1 o 2 minutos. Si no ves el cambio, recarga con Ctrl + F5.
+
+Nota: Git no sube carpetas vacias. Las carpetas de fotos se subiran cuando tengan archivos
+(los LEEME.txt hacen que ya existan en el repositorio).
+
+
+9. SI ALGO FALLA
+----------------
+- "Author identity unknown": falta el paso 7B (git config).
+- "remote origin already exists": ya conectaste el repositorio; sigue con "git push".
+- "rejected" o "non-fast-forward": el repositorio se creo con README; pide ayuda para resolverlo.
+- La pagina no se actualiza: espera 2 minutos y recarga con Ctrl + F5.
+- No se ve una foto: revisa que el nombre y la carpeta sean exactos (portada.jpg, evidencia-1.jpg ...).

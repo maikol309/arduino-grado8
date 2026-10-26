@@ -1,125 +1,102 @@
-﻿# Fortalecimiento de la lógica de programación con Arduino - Grado 8°
+﻿# Fortalecimiento de la lógica de programación mediante el diseño de prototipos con Arduino
 
-Página de evidencias del proyecto de aula desarrollado en la Institución Educativa Técnica José Cayetano Vásquez de Ciénega, Boyacá. Este proyecto busca fortalecer la lógica de programación mediante el diseño de prototipos con Arduino en estudiantes de grado octavo.
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![Arduino](https://img.shields.io/badge/Arduino-00979C?logo=arduino&logoColor=white)
+![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-222?logo=github&logoColor=white)
 
-Autor: **Maicol Alexander Cruz Cruz** · Licenciatura en Informática, UPTC · 2026
+Página de evidencias de la práctica pedagógica desarrollada con estudiantes de grado octavo de la **Institución Educativa Técnica José Cayetano Vásquez** (Ciénega, Boyacá), como parte de la Licenciatura en Informática de la **UPTC**.
+
+**Sitio en línea:** <https://maikol309.github.io/arduino-grado8/>
+**Contenido de la estrategia (guías y presentaciones):** <https://sites.google.com/uptc.edu.co/proyectodeaula8/>
 
 ---
 
-## Qué contiene
+## Objetivo
 
-| Archivo | Para qué sirve |
+Fortalecer la lógica de programación mediante el diseño de prototipos con Arduino en estudiantes de grado octavo de la Institución Educativa José Cayetano Vásquez de Ciénega, Boyacá.
+
+## Contexto
+
+| | |
 |---|---|
-| `index.html` | Estructura de la página. Aquí se edita el texto de las secciones. |
-| `css/styles.css` | Todos los estilos, colores y animaciones. |
-| `js/proyectos.js` | **Los datos de los 11 prototipos y la galería. Es el archivo que más vas a editar.** |
-| `js/main.js` | La interactividad: cajas 3D, contadores, filtros, copiar código. |
-| `img/` | Tus fotos y diagramas. |
+| Población | 25 estudiantes de grado octavo |
+| Organización | 11 grupos, cada uno responsable de un prototipo |
+| Intervención | 7 semanas: un diagnóstico y 6 sesiones |
+| Herramientas | Tinkercad Circuits, Arduino UNO, protoboard y el IDE de Arduino |
 
----
+## Sesiones
 
-## Publicar en GitHub Pages, paso a paso
+| Sesión | Fecha | Tema |
+|---|---|---|
+| Diagnóstico | 31 de agosto de 2026 | Prueba diagnóstica |
+| 1 | 21 y 24 de septiembre | Pensamiento lógico y programación: algoritmos, diagramas de flujo y variables |
+| 2 | 28 y 29 de septiembre | Entradas y salidas digitales: `pinMode`, `digitalWrite`, `digitalRead` |
+| 3 | 13 y 16 de octubre | Condicionales y ciclos: `if / else` y `for` |
+| 4 | Semana del 19 al 23 de octubre | Entradas analógicas y la función `map()` |
+| 5 y 6 | Por realizar | — |
 
-### 1. Crea la cuenta y el repositorio
-1. Entra a [github.com](https://github.com) e inicia sesión (o crea una cuenta gratis).
-2. Haz clic en el botón **+** de la esquina superior derecha y elige **New repository**.
-3. En **Repository name** escribe un nombre sin espacios, por ejemplo `arduino-grado8`.
-4. Marca la opción **Public**.
-5. No marques "Add a README file" (este proyecto ya trae uno).
-6. Haz clic en **Create repository**.
+## Prototipos
 
-### 2. Sube los archivos
-**Opción A — arrastrando (la más sencilla):**
-1. En la página del repositorio recién creado, haz clic en **uploading an existing file**.
-2. Abre la carpeta del proyecto en tu computador, selecciona **todo el contenido** (`index.html`, las carpetas `css`, `js`, `img` y el `README.md`) y arrástralo a la ventana del navegador.
-   > Importante: sube el *contenido* de la carpeta, no la carpeta comprimida ni la carpeta completa. `index.html` debe quedar en la raíz del repositorio.
-3. Abajo, en **Commit changes**, escribe `Primera versión del sitio` y haz clic en **Commit changes**.
+| # | Prototipo | Categoría |
+|---|---|---|
+| 1 | Caneca basura automática | Sensor ultrasónico |
+| 2 | Puerta automática pública | Control de acceso |
+| 3 | Medidor de humedad | Sensor de suelo |
+| 4 | Letrero led con Arduino | Matriz de LED |
+| 5 | Medidor de agua con Arduino | Sensor de nivel |
+| 6 | Alarma con detector de movimiento | Sensor de movimiento |
+| 7 | Matriz joystick | Entrada analógica |
+| 8 | Caseta de peaje | Sensor y servomotor |
+| 9 | Sonar con Arduino | Sensor ultrasónico |
+| 10 | Ruleta | Aleatoriedad |
+| 11 | Brazo robótico | Servomotores |
 
-**Opción B — con Git desde la terminal:**
-```bash
-cd ruta/de/la/carpeta
-git init
-git add .
-git commit -m "Primera versión del sitio"
-git branch -M main
-git remote add origin https://github.com/TU-USUARIO/arduino-grado8.git
-git push -u origin main
+Cada prototipo muestra su portada, materiales, integrantes, diagrama de conexiones, un acordeón de evidencias del proceso y el código con los comentarios escritos por los estudiantes.
+
+## Características del sitio
+
+- Placa Arduino UNO en 3D que gira y sigue el cursor, con una versión en CSS mientras carga el modelo.
+- Prototipos en cajas desplegables, con una sola abierta a la vez (se cierran con la **X** o con **Esc**).
+- Línea de tiempo de las sesiones y ruta de aprendizaje con fragmentos de código.
+- Código resaltado con la paleta One Dark (modo oscuro) y One Light (modo claro), con botón para copiar.
+- Galería filtrable por etapa y modo claro / oscuro.
+- Accesibilidad: contraste WCAG AA, navegación con teclado, texto alternativo en las imágenes y soporte de `prefers-reduced-motion`.
+- Diseño responsive desde 320 px.
+
+## Tecnologías
+
+HTML5, CSS3 y JavaScript sin frameworks. El visor 3D usa [`<model-viewer>`](https://modelviewer.dev/) de Google. Tipografías de Google Fonts: Orbitron, Rajdhani, Open Sans y JetBrains Mono.
+
+## Estructura del repositorio
+
+```
+├── index.html            Estructura de la página
+├── css/styles.css        Estilos y animaciones
+├── js/
+│   ├── proyectos.js      Datos de los prototipos y la galería
+│   └── main.js           Interactividad
+├── img/
+│   ├── proyectos/<id>/   Fotos, diagrama y evidencias de cada prototipo
+│   └── sesiones/         Fotos de las sesiones
+├── models/               Modelo 3D de la placa Arduino UNO
+├── INSTRUCCIONES.txt     Cómo editar, probar y publicar el sitio
+└── README.md
 ```
 
-### 3. Activa GitHub Pages
-1. En el repositorio, entra a la pestaña **Settings**.
-2. En el menú lateral izquierdo, elige **Pages**.
-3. En **Source**, selecciona **Deploy from a branch**.
-4. En **Branch**, elige `main` y la carpeta `/ (root)`. Haz clic en **Save**.
-5. Espera entre uno y tres minutos y recarga la página de Settings → Pages.
+## Ejecución local
 
-### 4. Abre tu sitio
-La dirección será:
+El modelo 3D no carga al abrir `index.html` con doble clic (el navegador lo bloquea); en ese caso se muestra la placa en CSS. Para verlo completo, publica el sitio en GitHub Pages o ábrelo con un servidor local. Los pasos detallados están en [`INSTRUCCIONES.txt`](INSTRUCCIONES.txt).
 
-```
-https://TU-USUARIO.github.io/arduino-grado8/
-```
+## Créditos
 
-Esa es la URL que puedes poner en el documento del proyecto de aula o compartir por WhatsApp con los estudiantes.
+- **Modelo 3D de Arduino UNO R3:** [Sketchfab](https://sketchfab.com/3d-models/arduino-uno-r3-286e0d188c184d51b7abccd89d774a28). Autoría y licencia según la página del modelo. Optimizado (texturas reducidas) para el sitio.
+- **Diagrama de la ruleta:** imagen del canal de YouTube RobotUNO.
+- Simulaciones y diagramas de conexión elaborados con [Tinkercad Circuits](https://www.tinkercad.com/circuits).
 
-### 5. Cuando hagas cambios
-Sube el archivo modificado al repositorio (o haz `git push`). GitHub Pages se actualiza solo en un par de minutos. Si no ves el cambio, recarga con **Ctrl + F5**.
+## Autor
 
----
-
-## Cómo editar el contenido
-
-### Cambiar los datos de un prototipo
-Abre `js/proyectos.js` con el Bloc de notas o Visual Studio Code. Cada prototipo se ve así:
-
-```js
-{
-  id: "caneca-automatica",
-  nombre: "Caneca automática",
-  lema: "Se abre sola cuando te acercas",
-  integrantes: ["Estudiante 1", "Estudiante 2"],
-  ...
-}
-```
-
-Reemplaza `"Estudiante 1"` por los nombres reales. Respeta las comillas y las comas.
-
-### Poner las fotos de cada prototipo
-Cada prototipo tiene su carpeta en `img/proyectos/<id>/` (por ejemplo `img/proyectos/caneca-automatica/`). Dentro, guarda las fotos con estos nombres (sirven `.jpg`, `.jpeg`, `.png` o `.webp`):
-
-- `portada.jpg`: el prototipo terminado
-- `diagrama.png`: el diagrama de conexiones
-- `evidencia-1.jpg`, `evidencia-2.jpg`, `evidencia-3.jpg`: fotos del proceso
-
-El texto que aparece sobre cada evidencia se edita en `js/proyectos.js`, en la lista `evidencias` de cada prototipo. Mientras falte una foto se muestra una imagen de relleno.
-### Agregar fotos a la galería
-Al final de `js/proyectos.js` está el arreglo `GALERIA`. Copia una línea y cámbiale la ruta, el texto alternativo y la categoría (`diagnostico`, `tinkercad`, `arduino` o `prototipos`).
-
----
-
-## Prueba local
-
-Haz doble clic en `index.html` y se abre en el navegador. No necesitas servidor ni instalar nada.
-
----
-
-## Detalles técnicos
-
-- HTML5, CSS3 y JavaScript sin frameworks ni dependencias.
-- Diseño mobile first, responsive desde 320 px.
-- Animaciones con `transform` y `keyframes`; placa Arduino modelada en CSS 3D.
-- Resaltado de sintaxis propio, con la paleta One Dark Pro.
-- Contraste conforme a WCAG AA, navegación con teclado, `alt` en todas las imágenes y soporte de `prefers-reduced-motion`.
-- Tipografías: Orbitron, Rajdhani, Open Sans y JetBrains Mono (Google Fonts).
-
-## Paleta
-
-| Uso | Color |
-|---|---|
-| Primario | `#00979C` |
-| Secundario | `#005C83` |
-| Acento | `#E4712B` |
-| Fondo | `#1A1A2E` → `#16213E` |
-| Texto | `#EAEAEA` |
-| Neón | `#00D9FF` |
-
+**Maicol Alexander Cruz Cruz**
+Licenciatura en Informática · Universidad Pedagógica y Tecnológica de Colombia (UPTC) · 2026
+Contacto: maicol.cruz01@uptc.edu.co
