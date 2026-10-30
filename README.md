@@ -1,4 +1,4 @@
-﻿# Fortalecimiento de la lógica de programación mediante el diseño de prototipos con Arduino
+# Fortalecimiento de la lógica de programación mediante el diseño de prototipos con Arduino
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
@@ -9,7 +9,7 @@
 Página de evidencias de la práctica pedagógica desarrollada con estudiantes de grado octavo de la **Institución Educativa Técnica José Cayetano Vásquez** (Ciénega, Boyacá), como parte de la Licenciatura en Informática de la **UPTC**.
 
 **Sitio en línea:** <https://maikol309.github.io/arduino-grado8/>
-**Contenido de la estrategia (guías y presentaciones):** <https://sites.google.com/uptc.edu.co/proyectodeaula8/>
+**Contenido de la estrategia (guías y presentaciones):** <https://maikol309.github.io/proyecto-aula-8/>
 
 ---
 
@@ -35,7 +35,8 @@ Fortalecer la lógica de programación mediante el diseño de prototipos con Ard
 | 2 | 28 y 29 de septiembre | Entradas y salidas digitales: `pinMode`, `digitalWrite`, `digitalRead` |
 | 3 | 13 y 16 de octubre | Condicionales y ciclos: `if / else` y `for` |
 | 4 | Semana del 19 al 23 de octubre | Entradas analógicas y la función `map()` |
-| 5 y 6 | Por realizar | — |
+| 5 | Semana del 27 al 31 de octubre | Del diagrama al prototipo: montaje con servomotor y sensor ultrasónico, y lectura de diagramas de conexiones |
+| 6 | Por realizar | — |
 
 ## Prototipos
 

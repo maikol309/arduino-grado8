@@ -60,9 +60,9 @@ Mientras falte una foto, la pagina muestra una imagen de relleno.
 ----------------------------------
 Guardalas en img/sesiones/ con estos nombres:
 
-  diagnostico.jpg, sesion-1.jpg, sesion-2.jpg, sesion-3.jpg, sesion-4.jpg
+  diagnostico.jpg, sesion-1.jpg, sesion-2.jpg, sesion-3.jpg, sesion-4.jpg, sesion-5.jpg
 
-Cuando se realicen las sesiones 5 y 6, se agregan sus fichas en index.html
+Cuando se realice la sesion 6, se agregan sus fichas en index.html
 (seccion "Sesion a sesion", busca "Proximamente").
 
 

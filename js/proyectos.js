@@ -238,41 +238,74 @@ void loop() {
     lema: "El nombre del colegio, letra por letra",
     categoria: "Matriz de LED",
     descripcion:
-      "Un letrero desplazable que muestra mensajes escritos por el propio grupo. Fue la ocasión para hablar de arreglos y de cómo un texto es, en realidad, una lista de caracteres.",
+      "Una matriz LED 8x8 con chip MAX7219 que muestra mensajes que se desplazan y tres dibujos de 8x8. El programa se diseñó primero con bloques y luego se tradujo a código de Arduino; al final el letrero dice el nombre del colegio y los nombres de quienes lo hicieron.",
     integrantes: ["Juan José Caro Aguirre", "Andrés Fernando Bohórquez Soler"],
-    componentes: ["Arduino UNO", "Matriz LED 8x8", "Protoboard y jumpers", "Fuente de 5 V", "Marco en madera"],
+    componentes: ["Arduino UNO", "Matriz LED 8x8 con MAX7219", "Protoboard y jumpers"],
     diagramaTexto:
-      "En Tinkercad la matriz LED 8x8 se representa con un chip ATtiny. Sus tres cables de señal van a los pines digitales 2, 3 y 4; el cable verde lleva los 5 V y el amarillo el GND del Arduino, y todo se arma sobre la protoboard.",
+      "En Tinkercad la matriz LED 8x8 se representa con un chip ATtiny. Sus tres cables de señal van a los pines digitales 2 (DIN), 3 (CS) y 4 (CLK); el cable verde lleva los 5 V y el amarillo el GND del Arduino, y todo se arma sobre la protoboard.",
     evidencias: [
-      { titulo: "Conexión en cadena", texto: "Unimos las cuatro matrices una detrás de otra y verificamos que todas encendieran." },
-      { titulo: "Probando mensajes", texto: "Escribimos distintos textos en el código y vimos cómo se desplazan por el letrero." },
-      { titulo: "Letrero terminado", texto: "Montamos las matrices en un marco de madera con el nombre del colegio." }
+      { titulo: "Programación en bloques", texto: "Armamos el programa con bloques: los pines de la matriz, los mensajes de texto y tres dibujos de 8x8." },
+      { titulo: "De bloques a código", texto: "Pasamos cada bloque a una línea de Arduino: setup, loop, delay y las funciones para escribir y dibujar." },
+      { titulo: "Letrero funcionando", texto: "La matriz muestra el saludo, los tres dibujos y los mensajes con el colegio y los nombres del grupo." }
     ],
-    codigo: `#include <MD_Parola.h>
-#include <MD_MAX72xx.h>
-#include <SPI.h>
+    codigo: `#include <MD_Parola.h>             // librería para escribir texto en la matriz
+#include <MD_MAX72xx.h>            // librería del chip MAX7219 de la matriz
 
-#define MODULOS 4
-#define PIN_CS  10
+int pinDIN = 2;                    // pin de datos (DIN)
+int pinCLK = 4;                    // pin del reloj (CLK)
+int pinCS = 3;                     // pin de selección (CS)
 
-MD_Parola letrero = MD_Parola(MD_MAX72XX::FC16_HW, PIN_CS, MODULOS);
+// Crea el panel con 1 matriz. Si el texto sale al revés, cambia FC16_HW por GENERIC_HW o PAROLA_HW
+MD_Parola panel = MD_Parola(MD_MAX72XX::FC16_HW, pinDIN, pinCLK, pinCS, 1);
+MD_MAX72XX *mx;                    // sirve para dibujar las imágenes punto por punto
 
-// Cambia este texto por el mensaje que quieras mostrar
-char mensaje[] = "JOSE CAYETANO VASQUEZ - GRADO 8";
+char buffer[60];                   // guarda el texto que se está mostrando
+
+// Cada número es una fila del dibujo: 1 = LED encendido, 0 = apagado
+byte carita1[8] = {B00111100, B01000010, B10100101, B10000001, B10100101, B10011001, B01000010, B00111100};
+byte carita2[8] = {B00111100, B01000010, B10100101, B10000001, B10011001, B10100101, B01000010, B00111100};
+byte dibujo3[8] = {B11111111, B10000001, B10111101, B10100101, B10100101, B10111101, B10000001, B11111111};
+
+// Función que escribe un mensaje que se desplaza por la matriz
+void escribir(String texto) {
+  texto.toCharArray(buffer, 60);   // pasa el mensaje a una lista de caracteres
+  panel.displayClear();            // limpia la matriz
+  panel.displayText(buffer, PA_CENTER, 60, 0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);   // el 60 es la velocidad
+  while (!panel.displayAnimate()) { }   // espera a que el mensaje termine de pasar
+}
+
+// Función que muestra un dibujo de 8x8 en la matriz
+void mostrarImagen(byte figura[]) {
+  panel.displayClear();            // limpia la matriz
+  for (int fila = 0; fila < 8; fila++) {   // recorre las 8 filas del dibujo
+    mx->setRow(fila, figura[fila]);        // enciende los LED de esa fila
+  }
+}
 
 void setup() {
-  letrero.begin();
-  letrero.setIntensity(5);
-  letrero.displayClear();
-  letrero.displayText(mensaje, PA_CENTER, 60, 1000,
-                      PA_SCROLL_LEFT, PA_SCROLL_LEFT);
+  panel.begin();                   // inicia la matriz
+  panel.setIntensity(5);           // brillo de 0 a 15
+  mx = panel.getGraphicObject();   // permite dibujar punto por punto
+  escribir("HOLA MUNDOOO");        // mensaje de bienvenida (una sola vez)
 }
 
 void loop() {
-  // displayAnimate devuelve true cuando termina el recorrido
-  if (letrero.displayAnimate()) {
-    letrero.displayReset();   // vuelve a empezar
-  }
+  mostrarImagen(carita1);          // primer dibujo
+  delay(2000);                     // espera 2 segundos
+  mostrarImagen(carita2);          // segundo dibujo
+  delay(2000);
+  mostrarImagen(dibujo3);          // tercer dibujo
+  delay(2000);
+
+  escribir("ESTE ES MI PROYECTO");
+  delay(2000);
+
+  escribir("I.E. TECNICA JOSE CAYETANO VASQUEZ");      // nombre del colegio
+  delay(1000);
+  escribir("PRACTICANTE: MAICOL CRUZ");                // nombre del practicante
+  delay(1000);
+  escribir("HECHO POR: ANDRES BOHORQUEZ Y JUAN JOSE CARO");   // nombres de los estudiantes
+  delay(2000);
 }`
   },
 

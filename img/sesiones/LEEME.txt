@@ -1,10 +1,11 @@
-﻿Fotos de las sesiones (la extension puede ser .jpg, .jpeg, .png o .webp):
+Fotos de las sesiones (la extension puede ser .jpg, .jpeg, .png o .webp):
 
   diagnostico.jpg   foto de la prueba diagnostica (31 de agosto)
   sesion-1.jpg      foto de la sesion 1
   sesion-2.jpg      foto de la sesion 2
   sesion-3.jpg      foto de la sesion 3
   sesion-4.jpg      foto de la sesion 4
+  sesion-5.jpg      foto de la sesion 5
 
 Mientras no haya foto, la pagina muestra una imagen de relleno.
-Cuando se realicen las sesiones 5 y 6 se agregan sus fichas en index.html (seccion "Sesion a sesion").
+Cuando se realice la sesion 6 se agregan sus fichas en index.html (seccion "Sesion a sesion").
