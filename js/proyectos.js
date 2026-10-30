@@ -39,9 +39,9 @@ const PROYECTOS = [
     ],
     codigo: `#include <Servo.h>
 
-const int TRIG = 9;
-const int ECHO = 8;
-const int UMBRAL = 25;     // centimetros para abrir
+int TRIG = 9;
+int ECHO = 8;
+int UMBRAL = 25;     // centimetros para abrir
 
 Servo tapa;
 
@@ -97,10 +97,10 @@ void loop() {
     ],
     codigo: `#include <Servo.h>
 
-const int SENSOR = 2;
-const int LED_ROJO = 4;
-const int LED_VERDE = 5;
-const int BUZZER = 7;
+int SENSOR = 2;
+int LED_ROJO = 4;
+int LED_VERDE = 5;
+int BUZZER = 7;
 
 Servo puerta;
 bool estaAbierta = false;
@@ -140,9 +140,9 @@ void loop() {
     lema: "La matera avisa cuando tiene sed",
     categoria: "Sensor de suelo",
     descripcion:
-      "Un sensor enterrado en la matera mide la humedad del suelo y enciende un aviso cuando baja del umbral. Calibrarlo con tierra seca y tierra mojada fue la mejor clase de variables del proyecto.",
+      "Un sensor capacitivo enterrado en la matera mide la humedad del suelo y la muestra en porcentaje en una pantalla LCD. Un semáforo de LED y un buzzer indican si el suelo está seco, en estado óptimo o húmedo. Con los valores de lectura en seco y en agua, el programa convierte la señal del sensor en un porcentaje.",
     integrantes: ["Laura Fernanda Vargas Arias", "Sara Valentina Barreto Galindo"],
-    componentes: ["Arduino UNO", "Sensor de humedad de suelo", "3 LED (rojo, amarillo y verde)", "Resistencia", "Protoboard", "Matera de prueba"],
+    componentes: ["Arduino UNO", "Sensor de humedad de suelo capacitivo", "Pantalla LCD 16x2 con módulo I2C", "3 LED (verde, amarillo y rojo)", "Buzzer", "Protoboard", "Matera de prueba"],
     diagramaTexto:
       "Tres LED van a los pines digitales 12 (rojo), 10 (amarillo) y 9 (verde) y comparten una resistencia en la protoboard. El sensor de humedad de suelo se conecta con su VCC al pin A0, su señal (SIG) al pin A1 y su GND al GND del Arduino.",
     evidencias: [
@@ -150,44 +150,85 @@ void loop() {
       { titulo: "Semáforo de humedad", texto: "Los LED indican si la matera está seca, con buena humedad o demasiado húmeda." },
       { titulo: "Prueba en la matera", texto: "Enterramos el sensor y comprobamos que el buzzer avisa cuando hace falta regar." }
     ],
-    codigo: `const int SENSOR = A0;
-const int LED_SECO = 4;
-const int LED_BIEN = 5;
-const int LED_HUMEDO = 6;
-const int BUZZER = 8;
+    codigo: `#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 
-// Valores obtenidos calibrando en clase:
-const int TIERRA_SECA = 850;
-const int TIERRA_MOJADA = 350;
+// Dirección I2C típica: 0x27 o 0x3F
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// Definición de Pines
+const int pinSensor = A0;
+const int ledVerde  = 2;
+const int ledAmarillo = 3;
+const int ledRojo   = 4;
+const int buzzer    = 5;
+
+// CALIBRACIÓN DEL SENSOR CAPACITIVO
+// Mide el valor en seco (aire) y sumergido en agua para ajustar estas variables:
+const int valorSeco = 620;   // Valor de lectura en el aire
+const int valorHumedo = 310; // Valor de lectura sumergido en agua
 
 void setup() {
-  pinMode(LED_SECO, OUTPUT);
-  pinMode(LED_BIEN, OUTPUT);
-  pinMode(LED_HUMEDO, OUTPUT);
-  pinMode(BUZZER, OUTPUT);
-  Serial.begin(9600);
+  pinMode(ledVerde, OUTPUT);
+  pinMode(ledAmarillo, OUTPUT);
+  pinMode(ledRojo, OUTPUT);
+  pinMode(buzzer, OUTPUT);
+
+  // Inicializar Pantalla LCD
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("Medidor Humedad");
+  lcd.setCursor(0, 1);
+  lcd.print("Iniciando...");
+  delay(2000);
+  lcd.clear();
 }
 
 void loop() {
-  int lectura = analogRead(SENSOR);
+  int lecturaRaw = analogRead(pinSensor);
 
-  // Se invierte el rango: mas humedad, menos resistencia
-  int humedad = map(lectura, TIERRA_SECA, TIERRA_MOJADA, 0, 100);
-  humedad = constrain(humedad, 0, 100);
+  // Convertir lectura analógica a porcentaje (0% a 100%)
+  int porcentajeHumedad = map(lecturaRaw, valorSeco, valorHumedo, 0, 100);
+  porcentajeHumedad = constrain(porcentajeHumedad, 0, 100);
 
-  Serial.print("Humedad: ");
-  Serial.print(humedad);
-  Serial.println(" %");
+  // Actualizar pantalla LCD
+  lcd.setCursor(0, 0);
+  lcd.print("Humedad: ");
+  lcd.print(porcentajeHumedad);
+  lcd.print("%   "); // Espacios para borrar dígitos sobrantes
 
-  digitalWrite(LED_SECO, humedad < 30);
-  digitalWrite(LED_BIEN, humedad >= 30 && humedad <= 70);
-  digitalWrite(LED_HUMEDO, humedad > 70);
+  lcd.setCursor(0, 1);
 
-  if (humedad < 30) {
-    tone(BUZZER, 880, 200);   // aviso de riego
+  // Lógica de Semáforo y Alerta
+  if (porcentajeHumedad < 30) {
+    // ESTADO SECO
+    lcd.print("Estado: SECO   ");
+    digitalWrite(ledRojo, HIGH);
+    digitalWrite(ledAmarillo, LOW);
+    digitalWrite(ledVerde, LOW);
+
+    // Pitido corto de advertencia
+    tone(buzzer, 1000, 200);
+  }
+  else if (porcentajeHumedad >= 30 && porcentajeHumedad <= 65) {
+    // ESTADO OPTIMO
+    lcd.print("Estado: OPTIMO ");
+    digitalWrite(ledRojo, LOW);
+    digitalWrite(ledAmarillo, HIGH);
+    digitalWrite(ledVerde, LOW);
+    noTone(buzzer);
+  }
+  else {
+    // ESTADO HUMEDO
+    lcd.print("Estado: HUMEDO ");
+    digitalWrite(ledRojo, LOW);
+    digitalWrite(ledAmarillo, LOW);
+    digitalWrite(ledVerde, HIGH);
+    noTone(buzzer);
   }
 
-  delay(1000);
+  delay(1000); // Lee cada 1 segundo
 }`
   },
 
@@ -241,53 +282,71 @@ void loop() {
     lema: "Cuánta agua queda, en tres colores",
     categoria: "Sensor de nivel",
     descripcion:
-      "Un sensor de nivel de agua mide qué tan lleno está un recipiente y lo traduce a un porcentaje. Tres LED indican nivel bajo, medio y alto, y un buzzer avisa cuando el recipiente está casi vacío.",
+      "Un sensor mide el nivel del agua de un vaso y lo muestra con cuatro LED: se encienden en orden, del rojo al azul, a medida que el agua sube. El programa convierte la lectura del sensor en un porcentaje con map() y usa un ciclo for para revisar los LED.",
     integrantes: ["Rafael Armando Jiménez Arias", "Manolo Steven Boyacá Jiménez"],
-    componentes: ["Arduino UNO", "Sensor de humedad usado como sensor de nivel", "4 LED (azul, verde, amarillo y rojo)", "Protoboard", "Vaso con agua"],
+    componentes: ["Arduino UNO", "Sensor de humedad usado como sensor de nivel", "4 LED (rojo, amarillo, verde y azul)", "Protoboard", "Vaso con agua"],
     diagramaTexto:
       "Un sensor de humedad funciona aquí como sensor de nivel dentro de un vaso con agua: su señal entra por el pin analógico A0 y su alimentación (VCC y GND) viene de la protoboard, que recibe los 5 V y el GND del Arduino. Cuatro LED indican el nivel: azul en el pin 5, verde en el 4, amarillo en el 3 y rojo en el 2.",
     evidencias: [
-      { titulo: "Montaje del sensor", texto: "Fijamos el sensor dentro del recipiente y conectamos los LED de nivel." },
-      { titulo: "Llenando el recipiente", texto: "Fuimos agregando agua poco a poco para ver cómo cambia la lectura y qué LED se enciende." },
-      { titulo: "Alarma de nivel bajo", texto: "Cuando el agua baja del 10 % el buzzer suena para avisar que casi no queda." }
+      { titulo: "Montaje del sensor", texto: "Fijamos el sensor dentro del vaso y conectamos los cuatro LED a la protoboard." },
+      { titulo: "Llenando el recipiente", texto: "Fuimos agregando agua poco a poco para ver cómo cambia la lectura en el Monitor Serie." },
+      { titulo: "LED según el nivel", texto: "Cuando el agua sube se encienden en orden el LED rojo, el amarillo, el verde y el azul." }
     ],
-    codigo: `const int SENSOR = A0;
-const int LED_BAJO = 4;
-const int LED_MEDIO = 5;
-const int LED_ALTO = 6;
-const int BUZZER = 8;
+    codigo: `// Medidor de agua con Arduino
+// El sensor mide el nivel del agua y los LED se encienden a medida que sube.
 
-const int LECTURA_VACIO = 0;      // sensor seco
-const int LECTURA_LLENO = 520;    // sensor sumergido (calibrar)
+int sensor = A0;      // señal del sensor
+int led1 = 2;         // LED rojo
+int led2 = 3;         // LED amarillo
+int led3 = 4;         // LED verde
+int led4 = 5;         // LED azul
+
+int lectura;          // valor que entrega el sensor
+int nivel;            // nivel de agua en porcentaje
 
 void setup() {
-  pinMode(LED_BAJO, OUTPUT);
-  pinMode(LED_MEDIO, OUTPUT);
-  pinMode(LED_ALTO, OUTPUT);
-  pinMode(BUZZER, OUTPUT);
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
+  pinMode(led3, OUTPUT);
+  pinMode(led4, OUTPUT);
   Serial.begin(9600);
 }
 
 void loop() {
-  int lectura = analogRead(SENSOR);
+  lectura = analogRead(sensor);              // lee el sensor (0 a 1023)
 
-  // Convierte la lectura en un porcentaje de 0 a 100
-  int nivel = map(lectura, LECTURA_VACIO, LECTURA_LLENO, 0, 100);
+  // map convierte la lectura en un porcentaje de 0 a 100.
+  // 0 = sensor seco, 876 = sensor sumergido (ajusta estos valores al calibrar)
+  nivel = map(lectura, 0, 876, 0, 100);
   nivel = constrain(nivel, 0, 100);
 
-  Serial.print("Nivel: ");
+  Serial.print("Lectura: ");
+  Serial.print(lectura);
+  Serial.print("  Nivel: ");
   Serial.print(nivel);
   Serial.println(" %");
 
-  digitalWrite(LED_BAJO, nivel < 30);
-  digitalWrite(LED_MEDIO, nivel >= 30 && nivel < 70);
-  digitalWrite(LED_ALTO, nivel >= 70);
+  // Primero se apagan todos los LED
+  digitalWrite(led1, LOW);
+  digitalWrite(led2, LOW);
+  digitalWrite(led3, LOW);
+  digitalWrite(led4, LOW);
 
-  if (nivel < 10) {
-    tone(BUZZER, 1000, 300);   // casi vacio
+  // Luego se encienden según el nivel del agua
+  if (nivel >= 10) {
+    digitalWrite(led1, HIGH);     // rojo: ya hay un poco de agua
+  }
+  if (nivel >= 35) {
+    digitalWrite(led2, HIGH);     // amarillo
+  }
+  if (nivel >= 60) {
+    digitalWrite(led3, HIGH);     // verde
+  }
+  if (nivel >= 85) {
+    digitalWrite(led4, HIGH);     // azul: casi lleno
   }
 
-  delay(500);
+  delay(500);   // espera medio segundo antes de volver a medir
 }`
   },
 
@@ -308,8 +367,8 @@ void loop() {
       { titulo: "Alarma activada", texto: "Al detectar movimiento, la sirena suena con luz intermitente y luego vuelve a vigilar." }
     ],
     codigo: `const int PIR = 2;
-const int LED = 13;
-const int BUZZER = 8;
+int LED = 13;
+int BUZZER = 8;
 
 void setup() {
   pinMode(PIR, INPUT);
@@ -361,8 +420,8 @@ void loop() {
 // DIN = 11, CLK = 13, CS = 10, una sola matriz
 LedControl matriz = LedControl(11, 13, 10, 1);
 
-const int PIN_X = A0;   // eje horizontal del joystick
-const int PIN_Y = A1;   // eje vertical del joystick
+int PIN_X = A0;   // eje horizontal del joystick
+int PIN_Y = A1;   // eje vertical del joystick
 
 int columna = 3;        // posicion inicial del punto
 int fila = 3;
@@ -406,11 +465,11 @@ void loop() {
     ],
     codigo: `#include <Servo.h>
 
-const int TRIG = 9;
-const int ECHO = 8;
-const int LED_ROJO = 4;
-const int LED_VERDE = 5;
-const int DISTANCIA_CARRO = 10;   // centimetros
+int TRIG = 9;
+int ECHO = 8;
+int LED_ROJO = 4;
+int LED_VERDE = 5;
+int DISTANCIA_CARRO = 10;   // centimetros
 
 Servo barrera;
 
@@ -468,8 +527,8 @@ void loop() {
     ],
     codigo: `#include <Servo.h>
 
-const int TRIG = 9;
-const int ECHO = 8;
+int TRIG = 9;
+int ECHO = 8;
 
 Servo base;
 
@@ -514,58 +573,29 @@ void loop() {
     lema: "El azar también se programa",
     categoria: "Aleatoriedad",
     descripcion:
-      "Doce LED en círculo que giran cada vez más lento hasta detenerse en uno. El grupo descubrió que random() siempre daba el mismo resultado hasta que aprendieron a sembrar la semilla con randomSeed().",
+      "Una ruleta movida por un motor paso a paso 28BYJ-48 con driver ULN2003. El programa usa random() para elegir cuántos pasos gira el motor, entre una y dos vueltas completas (2048 pasos es una vuelta), así que se detiene en un lugar distinto cada vez. Después de cinco segundos vuelve a girar.",
     integrantes: ["Carlos Adrián Silva Plazas", "David Fernando Plazas Fuentes"],
     componentes: ["Arduino UNO", "Motor paso a paso 28BYJ-48", "Driver ULN2003", "Jumpers", "Base de la ruleta"],
     diagramaTexto:
       "Este montaje mueve un motor paso a paso 28BYJ-48 con un driver ULN2003. Los cuatro pines de control del driver (IN1 a IN4) se conectan a los pines digitales 11, 10, 9 y 8 del Arduino, y el driver toma 5 V y GND directamente de la placa.",
     evidencias: [
-      { titulo: "Círculo de LED", texto: "Pegamos los 12 LED en la base circular y soldamos cada resistencia." },
-      { titulo: "El problema del azar", texto: "Descubrimos que random() repetía el resultado hasta que usamos randomSeed()." },
-      { titulo: "Ruleta girando", texto: "Al presionar el botón los LED giran, van más lento y se detienen en uno que parpadea." }
+      { titulo: "Motor y driver", texto: "Conectamos el motor paso a paso al driver ULN2003 y el driver a los pines 8, 9, 10 y 11 del Arduino." },
+      { titulo: "Pasos al azar", texto: "random() elige cuántos pasos gira el motor, entre una y dos vueltas completas." },
+      { titulo: "Ruleta girando", texto: "El motor gira, se detiene en un punto distinto cada vez y, cinco segundos después, vuelve a girar." }
     ],
-    codigo: `const int LEDS[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
-const int TOTAL = 12;
-const int BOTON = A1;
+    codigo: `#include <Stepper.h>                  // librería para controlar motores paso a paso
+
+Stepper motor1(2048, 8, 10, 9, 11);   // motor de 2048 pasos por vuelta, conectado a los pines 8, 10, 9 y 11
 
 void setup() {
-  for (int i = 0; i < TOTAL; i++) {
-    pinMode(LEDS[i], OUTPUT);
-  }
-  pinMode(BOTON, INPUT_PULLUP);
-
-  // A0 esta al aire: su ruido sirve como semilla del azar
-  randomSeed(analogRead(A0));
-}
-
-void girar() {
-  int ganador = random(0, TOTAL);
-  int vueltas = 3 * TOTAL + ganador;
-  int pausa = 25;
-
-  for (int paso = 0; paso <= vueltas; paso++) {
-    int actual = paso % TOTAL;
-
-    digitalWrite(LEDS[(actual + TOTAL - 1) % TOTAL], LOW);
-    digitalWrite(LEDS[actual], HIGH);
-
-    delay(pausa);
-    pausa = pausa + 4;   // cada vuelta va mas lenta
-  }
-
-  // parpadeo del ganador
-  for (int i = 0; i < 6; i++) {
-    digitalWrite(LEDS[ganador], !digitalRead(LEDS[ganador]));
-    delay(180);
-  }
-  digitalWrite(LEDS[ganador], HIGH);
+  motor1.setSpeed(15);                // velocidad del motor: 15 vueltas por minuto
 }
 
 void loop() {
-  if (digitalRead(BOTON) == LOW) {
-    girar();
-    delay(500);
-  }
+  int x;                              // variable que guarda cuántos pasos va a girar
+  x=random(2048,2048*2);              // número al azar entre 2048 y 4095 (de una a dos vueltas)
+  motor1.step(x);                     // gira el motor esa cantidad de pasos
+  delay(5000);                        // espera 5 segundos antes de volver a girar
 }`
   },
 
@@ -591,9 +621,9 @@ Servo base;
 Servo hombro;
 Servo codo;
 
-const int POT_BASE = A0;
-const int POT_HOMBRO = A1;
-const int POT_CODO = A2;
+int POT_BASE = A0;
+int POT_HOMBRO = A1;
+int POT_CODO = A2;
 
 void setup() {
   base.attach(3);
