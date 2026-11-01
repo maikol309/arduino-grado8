@@ -1,0 +1,26 @@
+Videos de los prototipos
+========================
+
+Para que el video de un prototipo aparezca en la pagina:
+
+1. Guarda el video en esta carpeta con el nombre del prototipo y extension .mp4:
+
+     caneca-automatica.mp4
+     puerta-automatica.mp4
+     medidor-humedad.mp4
+     ... (el nombre es el mismo "id" de la carpeta img/proyectos/<id>)
+
+2. En js/proyectos.js, el prototipo debe tener el campo:
+     video: "videos/<id>.mp4",
+   (la caneca ya lo tiene configurado). Si el archivo no existe, la pagina no muestra nada.
+
+Recomendaciones de peso:
+- GitHub no acepta archivos de mas de 100 MB y avisa desde 50 MB. Lo ideal es que cada video pese menos de 25 MB.
+- Para reducirlo: abre el video con HandBrake (gratis), elige "Fast 720p30" y exporta en formato MP4.
+- Formato: MP4 con video H.264 y audio AAC (es el que reproducen todos los navegadores y celulares).
+- Si el video es largo o pesa mucho, otra opcion es subirlo a YouTube como "no listado" y compartir el enlace.
+
+Videos que ya estan o estan previstos:
+  caneca-automatica.mp4   (ya esta)
+  puerta-automatica.mp4   (falta guardarlo con este nombre; el prototipo ya lo espera)
+El video aparece antes del diagrama y de las evidencias de cada prototipo.

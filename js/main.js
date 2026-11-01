@@ -308,12 +308,18 @@
   // Fotos: img/proyectos/<id>/portada, diagrama y evidencia-N. Se prueba cada extensión
   // (jpg, jpeg, png, webp) y, si no hay archivo, se muestra la imagen de relleno.
   const EXTENSIONES = ['jpg', 'jpeg', 'png', 'webp'];
-  function foto(id, nombre, alt, clase = '') {
+  function foto(id, nombre, alt, clase = '', ext = 'jpg') {
     const base = `img/proyectos/${id}/${nombre}`;
-    return `<img class="${clase}" src="${base}.jpg" data-base="${base}" data-try="0" alt="${alt}" loading="lazy">`;
+    const inicio = Math.max(0, EXTENSIONES.indexOf(ext));
+    return `<img class="${clase}" src="${base}.${EXTENSIONES[inicio]}" data-base="${base}" data-try="${inicio}" alt="${alt}" loading="lazy">`;
   }
   document.addEventListener('error', (e) => {
     const img = e.target;
+    if (img instanceof HTMLSourceElement) {          // video que no existe: se oculta su bloque
+      const bloque = img.closest('[data-video-block]');
+      if (bloque) bloque.hidden = true;
+      return;
+    }
     if (!(img instanceof HTMLImageElement) || !img.dataset.base) return;
     const siguiente = Number(img.dataset.try) + 1;
     if (siguiente < EXTENSIONES.length) {
@@ -340,16 +346,49 @@
     const num = String(i + 1).padStart(2, '0');
     const integrantes = p.integrantes.map((n) => `<li>${n}</li>`).join('');
     const componentes = p.componentes.map((c) => `<li>${c}</li>`).join('');
+    const ext0 = p.ext || 'jpg';                    // extensión de las fotos de este prototipo
+    const galeriaGrande = p.evidencias.length > 3;  // con 4 fotos o más se usa el visor grande
+    const cine = p.evidencias.length < 10;          // con menos de 10 fotos el visor avanza solo, estilo cine
 
     // Acordeón de evidencias: la foto activa se expande y muestra su explicación encima
     const evidencias = p.evidencias.map((ev, k) => `
       <div class="evid__item${k === 0 ? ' is-active' : ''}" tabindex="0" role="button"
            aria-pressed="${k === 0}" aria-label="Evidencia ${k + 1}: ${ev.titulo}">
-        ${foto(p.id, `evidencia-${k + 1}`, `${ev.titulo}: ${ev.texto}`)}
+        ${foto(p.id, `evidencia-${k + 1}`, `${ev.titulo}: ${ev.texto}`, '', ext0)}
         <span class="evid__n" aria-hidden="true">${String(k + 1).padStart(2, '0')}</span>
         <span class="evid__tag" aria-hidden="true">${ev.titulo}</span>
         <span class="evid__cap"><b>${ev.titulo}</b><em>${ev.texto}</em></span>
       </div>`).join('');
+
+    // Visor grande de evidencias (más de 6 fotos): foto con pie de foto y tira de miniaturas
+    const miniaturas = p.evidencias.map((ev, k) => `
+      <button class="egal__thumb${k === 0 ? ' is-active' : ''}" data-k="${k}" aria-label="Foto ${k + 1}: ${ev.titulo}">
+        ${foto(p.id, `evidencia-${k + 1}`, ev.titulo, '', ext0)}
+      </button>`).join('');
+    const galeria = `
+      <div class="egal${cine ? ' egal--cine' : ''}" data-egal data-id="${p.id}" data-k="0">
+        <figure class="egal__stage">
+          ${cine ? foto(p.id, 'evidencia-1', '', 'egal__bg', ext0).replace('<img ', '<img aria-hidden="true" ') : ''}
+          ${foto(p.id, 'evidencia-1', `${p.evidencias[0].titulo}: ${p.evidencias[0].texto}`, 'egal__img', ext0)}
+          <figcaption class="egal__cap"><b>${p.evidencias[0].titulo}</b><em>${p.evidencias[0].texto}</em></figcaption>
+          <button class="egal__nav egal__nav--prev" aria-label="Foto anterior">‹</button>
+          <button class="egal__nav egal__nav--next" aria-label="Foto siguiente">›</button>
+          <span class="egal__count">01 / ${String(p.evidencias.length).padStart(2, '0')}</span>
+          ${cine ? '<button class="egal__play" aria-pressed="false" aria-label="Pausar la presentación">❚❚</button><div class="egal__bar" aria-hidden="true"><span></span></div>' : ''}
+        </figure>
+        <div class="egal__thumbs">${miniaturas}</div>
+      </div>`;
+
+    // Video del funcionamiento (opcional): si el archivo no existe, el bloque se oculta solo
+    const video = p.video ? `
+        <section class="detail__block" data-video-block>
+          <h4>Video del funcionamiento</h4>
+          <p class="detail__text">${p.videoTexto || 'Así funciona el prototipo terminado.'}</p>
+          <video class="detail__video" controls preload="metadata" playsinline>
+            <source src="${p.video}" type="video/mp4">
+            Tu navegador no puede reproducir este video.
+          </video>
+        </section>` : '';
 
     crate.innerHTML = `
       <button class="crate__lid" aria-expanded="false" aria-controls="detalle-${p.id}">
@@ -369,7 +408,7 @@
         </header>
 
         <div class="detail__intro">
-          <figure class="detail__cover">${foto(p.id, 'portada', `Prototipo terminado: ${p.nombre}`)}</figure>
+          <figure class="detail__cover">${foto(p.id, 'portada', `Prototipo terminado: ${p.nombre}`, '', ext0)}</figure>
           <div>
             <p class="detail__desc">${p.descripcion}</p>
             <h4>Materiales</h4>
@@ -382,16 +421,20 @@
           <ul class="team">${integrantes}</ul>
         </section>
 
+        ${video}
+
         <section class="detail__block">
           <h4>Diagrama de conexiones</h4>
           <p class="detail__text">${p.diagramaTexto}</p>
-          <figure class="diagram">${foto(p.id, 'diagrama', `Diagrama de conexiones del prototipo ${p.nombre}`)}</figure>
+          <figure class="diagram">${foto(p.id, 'diagrama', `Diagrama de conexiones del prototipo ${p.nombre}`, '', ext0)}</figure>
         </section>
 
         <section class="detail__block">
           <h4>Evidencias del proceso</h4>
-          <p class="detail__text">Pasa el cursor o toca una foto para ampliarla y leer qué se hizo en cada paso.</p>
-          <div class="evid" data-evid>${evidencias}</div>
+          <p class="detail__text">${galeriaGrande
+            ? (cine ? 'Las fotos pasan solas en orden, cada una con una breve explicación. Pasa el cursor para pausar, o usa las flechas y las miniaturas.' : 'Recorre las fotos en orden con las flechas o las miniaturas: cada una trae una breve explicación de lo que se está haciendo.')
+            : 'Pasa el cursor o toca una foto para ampliarla y leer qué se hizo en cada paso.'}</p>
+          ${galeriaGrande ? galeria : `<div class="evid" data-evid>${evidencias}</div>`}
         </section>
 
         <section class="detail__block">
@@ -425,7 +468,83 @@
     const item = e.target.closest('.evid__item');
     if (item) activarEvidencia(item);
   });
+  // Visor grande de evidencias: flechas, miniaturas y teclado
+  function mostrarEvidencia(gal, k) {
+    const p = PROYECTOS.find((x) => x.id === gal.dataset.id);
+    const total = p.evidencias.length;
+    k = (k + total) % total;
+    const ev = p.evidencias[k];
+    const img = $('.egal__img', gal);
+    const base = `img/proyectos/${p.id}/evidencia-${k + 1}`;
+    const inicio = Math.max(0, EXTENSIONES.indexOf(p.ext || 'jpg'));
+    img.classList.remove('is-empty');
+    img.dataset.base = base;
+    img.dataset.try = inicio;
+    img.src = `${base}.${EXTENSIONES[inicio]}`;
+    img.alt = `${ev.titulo}: ${ev.texto}`;
+    const fondo = $('.egal__bg', gal);          // fondo difuminado del estilo cine
+    if (fondo) { fondo.dataset.base = base; fondo.dataset.try = inicio; fondo.src = `${base}.${EXTENSIONES[inicio]}`; }
+    const barra = $('.egal__bar span', gal);    // la barra de progreso vuelve a empezar
+    if (barra) { barra.style.animation = 'none'; void barra.offsetWidth; barra.style.animation = ''; }
+    $('.egal__cap b', gal).textContent = ev.titulo;
+    $('.egal__cap em', gal).textContent = ev.texto;
+    $('.egal__count', gal).textContent = `${String(k + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+    gal.dataset.k = k;
+    $$('.egal__thumb', gal).forEach((t, i) => t.classList.toggle('is-active', i === k));
+    const tira = $('.egal__thumbs', gal);
+    const activa = $('.egal__thumb.is-active', gal);
+    tira.scrollTo({ left: activa.offsetLeft - (tira.clientWidth - activa.clientWidth) / 2, behavior: menosMovimiento ? 'auto' : 'smooth' });
+  }
+  shelf.addEventListener('click', (e) => {
+    const gal = e.target.closest('[data-egal]');
+    if (!gal) return;
+    if (deslizo) { deslizo = false; return; }    // un deslizamiento no debe abrir la foto
+    const play = e.target.closest('.egal__play');
+    if (play) {
+      const pausa = gal.classList.toggle('is-paused');
+      play.setAttribute('aria-pressed', String(pausa));
+      play.textContent = pausa ? '▶' : '❚❚';
+      play.setAttribute('aria-label', pausa ? 'Reanudar la presentación' : 'Pausar la presentación');
+      return;
+    }
+    const actual = Number(gal.dataset.k || 0);
+    if (e.target.closest('.egal__nav--next')) mostrarEvidencia(gal, actual + 1);
+    else if (e.target.closest('.egal__nav--prev')) mostrarEvidencia(gal, actual - 1);
+    else if (e.target.closest('.egal__thumb')) mostrarEvidencia(gal, Number(e.target.closest('.egal__thumb').dataset.k));
+    else if (e.target.closest('.egal__img')) {   // clic en la foto: se abre en grande
+      const img = $('.egal__img', gal);
+      abrirModal($('.egal__cap b', gal).textContent, `<img src="${img.currentSrc || img.src}" alt="${img.alt}">`);
+    }
+  });
+  // Estilo cine: cuando la barra de progreso termina, pasa sola a la siguiente foto
+  shelf.addEventListener('animationend', (e) => {
+    if (!e.target.matches('.egal__bar span')) return;
+    const gal = e.target.closest('[data-egal]');
+    mostrarEvidencia(gal, Number(gal.dataset.k || 0) + 1);
+  });
+  // Deslizar con el dedo o el mouse sobre la foto: anterior o siguiente
+  let xInicio = null, deslizo = false;
+  shelf.addEventListener('pointerdown', (e) => {
+    xInicio = (e.target.closest('.egal__stage') && !e.target.closest('button')) ? e.clientX : null;
+  });
+  shelf.addEventListener('pointerup', (e) => {
+    if (xInicio === null) return;
+    const dx = e.clientX - xInicio;
+    xInicio = null;
+    const gal = e.target.closest('[data-egal]');
+    if (gal && Math.abs(dx) > 45) {
+      deslizo = true;
+      setTimeout(() => { deslizo = false; }, 60);
+      mostrarEvidencia(gal, Number(gal.dataset.k || 0) + (dx < 0 ? 1 : -1));
+    }
+  });
   shelf.addEventListener('keydown', (e) => {
+    const gal = e.target.closest('[data-egal]');
+    if (gal && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+      e.preventDefault();
+      mostrarEvidencia(gal, Number(gal.dataset.k || 0) + (e.key === 'ArrowRight' ? 1 : -1));
+      return;
+    }
     const item = e.target.closest('.evid__item');
     if (item && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); activarEvidencia(item); }
   });
@@ -458,7 +577,7 @@
     cerrarCajas();
 
     if (!abierta) {
-      crate.classList.add('is-open');
+      crate.classList.add('is-open', 'is-in');   // is-in: la caja abierta es muy alta y no se activaría sola
       tapa.setAttribute('aria-expanded', 'true');
       setTimeout(() => {
         const y = crate.getBoundingClientRect().top + window.scrollY - 100;

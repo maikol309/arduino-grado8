@@ -1,13 +1,11 @@
 ﻿Carpeta del prototipo: letrero-led
 
-Pon aqui las fotos con estos nombres (la extension puede ser .jpg, .jpeg, .png o .webp):
+Fotos (extension .jpeg):
 
-  portada.jpg       foto del prototipo terminado
-  diagrama.png      diagrama de conexiones (Tinkercad o dibujo)
-  evidencia-1.jpg   foto del proceso 1
-  evidencia-2.jpg   foto del proceso 2
-  evidencia-3.jpg   foto del proceso 3
+  diagrama.jpeg       diagrama de conexiones
+  evidencia-1.jpeg    ... hasta evidencia-9.jpeg: proceso, en orden
+  portada.jpeg        prototipo armado (copia de evidencia-9; se puede cambiar por otra foto)
 
-El texto que acompana cada evidencia se escribe en js/proyectos.js (campo "evidencias").
-Si agregas mas fotos (evidencia-4.jpg...), agrega tambien su texto en esa lista.
-Mientras no haya foto, la pagina muestra una imagen de relleno.
+Con mas de 6 evidencias la pagina las muestra en un visor grande con flechas y miniaturas.
+El pie de foto de cada evidencia se edita en js/proyectos.js (lista "evidencias").
+Las fotos que no se usaron se apartaron en la carpeta fotos-sin-usar, fuera del sitio.

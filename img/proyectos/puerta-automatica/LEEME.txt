@@ -1,13 +1,12 @@
-﻿Carpeta del prototipo: puerta-automatica
+Carpeta del prototipo: puerta-automatica
 
-Pon aqui las fotos con estos nombres (la extension puede ser .jpg, .jpeg, .png o .webp):
+Fotos (extension .jpeg):
 
-  portada.jpg       foto del prototipo terminado
-  diagrama.png      diagrama de conexiones (Tinkercad o dibujo)
-  evidencia-1.jpg   foto del proceso 1
-  evidencia-2.jpg   foto del proceso 2
-  evidencia-3.jpg   foto del proceso 3
+  diagrama.jpeg       diagrama de conexiones
+  evidencia-1.jpeg    ... hasta evidencia-16.jpeg: proceso de armado, en orden
+  portada.jpeg        prototipo armado (copia de evidencia-16; se puede cambiar por otra foto)
 
-El texto que acompana cada evidencia se escribe en js/proyectos.js (campo "evidencias").
-Si agregas mas fotos (evidencia-4.jpg...), agrega tambien su texto en esa lista.
-Mientras no haya foto, la pagina muestra una imagen de relleno.
+Con mas de 6 evidencias la pagina las muestra en un visor grande con flechas y miniaturas.
+El pie de foto de cada evidencia se edita en js/proyectos.js (lista "evidencias").
+Video: videos/puerta-automatica.mp4 (aparece antes del diagrama y de las evidencias).
+Las fotos repetidas se apartaron en la carpeta fotos-sin-usar, fuera del sitio.

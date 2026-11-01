@@ -1,13 +1,12 @@
 ﻿Carpeta del prototipo: matriz-joystick
 
-Pon aqui las fotos con estos nombres (la extension puede ser .jpg, .jpeg, .png o .webp):
+Fotos (extension .jpeg):
 
-  portada.jpg       foto del prototipo terminado
-  diagrama.png      diagrama de conexiones (Tinkercad o dibujo)
-  evidencia-1.jpg   foto del proceso 1
-  evidencia-2.jpg   foto del proceso 2
-  evidencia-3.jpg   foto del proceso 3
+  diagrama.jpeg       diagrama de conexiones
+  evidencia-1.jpeg    ... hasta evidencia-7.jpeg: proceso de armado, en orden
+  portada.jpeg        (pendiente) foto del prototipo terminado
 
-El texto que acompana cada evidencia se escribe en js/proyectos.js (campo "evidencias").
-Si agregas mas fotos (evidencia-4.jpg...), agrega tambien su texto en esa lista.
-Mientras no haya foto, la pagina muestra una imagen de relleno.
+Con 4 a 9 fotos la pagina usa el visor estilo cine: avanza sola cada 6 segundos, se pausa al pasar el cursor
+o con el boton, y se puede deslizar con el dedo. Con 10 fotos o mas el visor no avanza solo.
+Mientras no exista portada.jpeg, la pagina muestra una imagen de relleno.
+El pie de foto de cada evidencia se edita en js/proyectos.js (lista "evidencias").

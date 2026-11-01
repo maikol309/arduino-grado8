@@ -1352,3 +1352,102 @@ a { color: inherit; }
   .codebox__name::before { margin-right: 30px; }
   .detail__actions .btn { width: 100%; justify-content: center; }
 }
+/* ===== Visor grande de evidencias (más de 6 fotos) ===== */
+.egal { margin-top: 18px; min-width: 0; }
+.egal__stage {
+  position: relative; margin: 0; overflow: hidden;
+  height: clamp(300px, 52vw, 600px);
+  border-radius: 14px; border: 1px solid var(--glow);
+  background: #0a1220;
+}
+.egal__img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; cursor: zoom-in;
+}
+.egal__img.is-empty { object-fit: cover; cursor: default; }
+.egal__cap {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+  display: grid; gap: 6px; padding: 54px clamp(16px, 3vw, 30px) 18px;
+  color: #fff; pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(4, 12, 22, .92));
+}
+.egal__cap b { font-family: var(--font-alt); font-weight: 800; font-size: clamp(1.15rem, 2.6vw, 1.6rem); }
+.egal__cap em { font-style: normal; font-size: clamp(.95rem, 1.8vw, 1.1rem); line-height: 1.5; max-width: 62ch; color: #eaf3f8; }
+.egal__count {
+  position: absolute; top: 12px; left: 14px; z-index: 3;
+  font-family: var(--font-code); font-size: .82rem; color: #fff;
+  padding: 5px 11px; border-radius: 999px; background: rgba(4, 12, 22, .72);
+  border: 1px solid rgba(255,255,255,.2);
+}
+.egal__nav {
+  position: absolute; top: 50%; z-index: 3; transform: translateY(-50%);
+  width: 46px; height: 46px; border-radius: 50%; cursor: pointer;
+  font-size: 1.6rem; line-height: 1; color: #fff;
+  background: rgba(4, 12, 22, .72); border: 1px solid rgba(255,255,255,.28);
+  transition: background .25s, transform .25s var(--ease);
+}
+.egal__nav:hover, .egal__nav:focus-visible { background: var(--orange); transform: translateY(-50%) scale(1.08); }
+.egal__nav--prev { left: 12px; }
+.egal__nav--next { right: 12px; }
+.egal__thumbs {
+  position: relative; display: flex; gap: 8px; margin-top: 10px; padding: 4px 2px 10px;
+  overflow-x: auto; scrollbar-width: thin;
+}
+.egal__thumb {
+  flex: 0 0 auto; width: 92px; height: 68px; padding: 0; cursor: pointer; overflow: hidden;
+  border-radius: 8px; border: 2px solid transparent; background: #0a1220; opacity: .65;
+  transition: opacity .25s, border-color .25s, transform .25s var(--ease);
+}
+.egal__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.egal__thumb:hover, .egal__thumb:focus-visible { opacity: 1; }
+.egal__thumb.is-active { opacity: 1; border-color: var(--orange); transform: translateY(-2px); }
+
+/* Video del funcionamiento */
+.detail__video {
+  display: block; width: 100%; max-height: 70vh; margin-top: 16px;
+  border-radius: 14px; border: 1px solid var(--glow); background: #000;
+}
+
+@media (max-width: 720px) {
+  .egal__stage { height: min(118vw, 500px); }
+  .egal__cap { gap: 3px; padding-bottom: 12px; }
+  .egal__cap b { font-size: 1.05rem; }
+  .egal__cap em { font-size: .84rem; line-height: 1.4; }
+  .egal__nav { width: 40px; height: 40px; }
+  .egal__thumb { width: 76px; height: 58px; }
+  .egal__cap { padding-top: 40px; }
+}
+
+/* ===== Visor estilo cine (menos de 10 fotos): fondo difuminado, barra de progreso y avance automático ===== */
+.egal__stage { touch-action: pan-y; }
+.egal--cine .egal__stage { background: #05080f; }
+.egal__bg {
+  position: absolute; inset: -6%; width: 112%; height: 112%; object-fit: cover;
+  filter: blur(26px) brightness(.45) saturate(1.2); pointer-events: none;
+}
+.egal--cine .egal__stage::after { /* viñeta de cine */
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .55) 100%);
+}
+.egal--cine .egal__img { z-index: 1; filter: drop-shadow(0 10px 30px rgba(0, 0, 0, .6)); }
+.egal--cine .egal__cap, .egal--cine .egal__count, .egal--cine .egal__nav, .egal--cine .egal__play { z-index: 3; }
+.egal__play {
+  position: absolute; top: 12px; right: 14px; width: 42px; height: 42px; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer; font-size: .85rem; letter-spacing: -1px; color: #fff;
+  background: rgba(4, 12, 22, .72); border: 1px solid rgba(255,255,255,.28);
+  transition: background .25s, transform .25s var(--ease);
+}
+.egal__play:hover, .egal__play:focus-visible { background: var(--orange); transform: scale(1.08); }
+.egal__bar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 5px; z-index: 4;
+  background: rgba(255, 255, 255, .16);
+}
+.egal__bar span {
+  display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--glow), var(--orange));
+  animation: egalBarra 6s linear forwards;
+}
+@keyframes egalBarra { from { width: 0; } to { width: 100%; } }
+.egal--cine:hover .egal__bar span, .egal--cine.is-paused .egal__bar span { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .egal__bar, .egal__play { display: none; }   /* sin movimiento automático */
+}

@@ -13,6 +13,9 @@
    diagramaTexto  Frase que presenta el diagrama de conexiones.
    evidencias  Lista de { titulo, texto }: cada una es una foto del acordeón
                con su explicación sobrepuesta.
+   ext         (opcional) extensión de las fotos del prototipo: "jpeg", "png"... Por defecto "jpg".
+   video       (opcional) ruta del video: "videos/<id>.mp4". Si el archivo no existe, no se muestra.
+   videoTexto  (opcional) frase que presenta el video.
    Las fotos van en img/proyectos/<id>/ con estos nombres:
      portada.jpg, diagrama.png, evidencia-1.jpg, evidencia-2.jpg ...
      (también se aceptan .jpeg, .png y .webp)
@@ -27,55 +30,144 @@ const PROYECTOS = [
     lema: "Se abre sola cuando te acercas",
     categoria: "Sensor ultrasónico",
     descripcion:
-      "La tapa se levanta cuando el sensor detecta una mano a menos de 25 cm y vuelve a cerrarse sola. Discutimos en clase qué umbral usar para que no se abriera cada vez que alguien pasaba caminando.",
+      "La tapa de la caneca se abre sola cuando el sensor ultrasónico detecta una mano u objeto a menos de 20 cm, y se queda abierta 4 segundos; mientras el objeto siga cerca, el tiempo se reinicia. La caja es de cartón forrada con chapas de botella, y un servomotor con una varilla levanta la tapa. El programa mide el tiempo con millis() para no detenerse mientras espera.",
     integrantes: ["Samuel David Medina Orozco", "Ricardo Esteban Gómez Pulido"],
-    componentes: ["Arduino UNO", "Sensor ultrasónico HC-SR04", "Servomotor", "Caneca plástica y soportes"],
+    componentes: ["Arduino UNO", "Sensor ultrasónico HC-SR04", "Servomotor SG90", "Caja de cartón forrada con chapas", "Varilla para levantar la tapa", "Cables jumper y cinta"],
+    ext: "jpeg",
+    video: "videos/caneca-automatica.mp4",
+    videoTexto: "Así funciona el prototipo: cuando una mano se acerca a menos de 20 cm, la tapa se abre y luego se cierra sola.",
     diagramaTexto:
       "El sensor ultrasónico HC-SR04 se conecta así: TRIG al pin 9, ECHO al pin 10, GND al GND y VCC al pin de 3,3 V. El servomotor que mueve la tapa tiene su cable de señal en el pin 6, el rojo en 5 V y el café en GND.",
     evidencias: [
-      { titulo: "Armado del circuito", texto: "Conectamos el sensor y el servomotor en la protoboard y revisamos cada cable contra el diagrama." },
-      { titulo: "Prueba del sensor", texto: "Acercamos la mano a distintas distancias para ver a cuántos centímetros debía abrirse la tapa." },
-      { titulo: "Caneca terminada", texto: "Montamos el servomotor en la caneca real: la tapa se abre sola y se cierra a los tres segundos." }
+      { titulo: "Materiales sobre la mesa", texto: "Sensor ultrasónico HC-SR04 y sus cables de conexión antes de armar el prototipo." },
+      { titulo: "Cables del sensor", texto: "Los cables de colores del sensor, ya organizados y unidos con cinta." },
+      { titulo: "La caja de chapas", texto: "La caja de cartón forrada con chapas, con el Arduino UNO pegado a un costado." },
+      { titulo: "Arduino fijado a la caja", texto: "El Arduino se asegura a la caja con cinta y se tienden los cables." },
+      { titulo: "Conexiones del Arduino", texto: "Los cables naranja y rojo conectados al Arduino y sujetos con cinta." },
+      { titulo: "Detalle de las conexiones", texto: "Vista cercana de los cables que salen del Arduino UNO." },
+      { titulo: "El servomotor", texto: "El servomotor SG90 dentro de la caja, con una varilla pegada a su eje." },
+      { titulo: "Sensor y servo por dentro", texto: "El sensor pegado en la tapa y el servomotor con su varilla, vistos desde adentro." },
+      { titulo: "Conectando los cables", texto: "Un estudiante conecta los cables en el costado de la caja." },
+      { titulo: "Revisando las conexiones", texto: "Se terminan de conectar los cables por el costado de la caja." },
+      { titulo: "Cables asegurados", texto: "La caja con el Arduino afuera y los cables sujetos con cinta." },
+      { titulo: "Los ojos del sensor", texto: "La tapa con los dos orificios por donde el sensor ultrasónico mide la distancia." },
+      { titulo: "Escribiendo el código", texto: "Un estudiante escribe el programa en el computador." },
+      { titulo: "Cargando el programa", texto: "Se carga el programa al Arduino con el cable USB conectado al computador." },
+      { titulo: "Ajustes y pruebas", texto: "Un estudiante revisa y ajusta el prototipo mientras lo prueban." },
+      { titulo: "Probando la tapa", texto: "Se levanta la tapa para comprobar el sensor y el servomotor." },
+      { titulo: "Prototipo presentado", texto: "Un estudiante muestra el prototipo armado a sus compañeros." }
     ],
     codigo: `#include <Servo.h>
 
-int TRIG = 9;
-int ECHO = 8;
-int UMBRAL = 25;     // centimetros para abrir
+// Pines del sensor ultrasónico HC-SR04
+const int trigPin = 9;   // Pin que envía el pulso ultrasónico
+const int echoPin = 10;  // Pin que recibe el eco reflejado
 
-Servo tapa;
+// Objeto para controlar el servomotor
+Servo tapaServo;
+const int servoPin = 6;  // Pin de señal del servo
+
+// Parámetros configurables
+const int anguloCerrado = 0;      // Posición de tapa cerrada
+const int anguloAbierto = 112;    // Posición de tapa abierta
+const int umbralDistancia = 20;   // Distancia máxima para detectar un objeto (cm)
+const unsigned long tiempoAbierto = 4000; // Tiempo que permanecerá abierta la tapa (ms)
+
+// Intervalo entre mediciones para evitar lecturas continuas
+const unsigned long intervaloMedicion = 100;
+
+// Tiempo máximo de espera del eco (30 ms ≈ 5 m)
+const unsigned long timeoutEcho = 30000;
+
+// Variables de control
+unsigned long tiempoInicioApertura = 0; // Guarda el momento en que se abrió la tapa
+unsigned long ultimaMedicion = 0;       // Guarda la última medición realizada
+bool tapaAbierta = false;               // Estado actual de la tapa
 
 void setup() {
-  pinMode(TRIG, OUTPUT);
-  pinMode(ECHO, INPUT);
-  tapa.attach(6);
-  tapa.write(0);           // cerrada
+  // Configuración de los pines del sensor
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  // Inicialización del servomotor en posición cerrada
+  tapaServo.attach(servoPin);
+  tapaServo.write(anguloCerrado);
+
+  // Inicialización del monitor serie
   Serial.begin(9600);
+  Serial.println("Sistema iniciado. Tapa cerrada.");
 }
 
-// Devuelve la distancia medida en centimetros
+// Función para medir la distancia usando el sensor ultrasónico
 int medirDistancia() {
-  digitalWrite(TRIG, LOW);
-  delayMicroseconds(2);
-  digitalWrite(TRIG, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIG, LOW);
 
-  long duracion = pulseIn(ECHO, HIGH);
-  return duracion * 0.034 / 2;    // velocidad del sonido
+  // Genera el pulso ultrasónico
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+
+  digitalWrite(trigPin, LOW);
+
+  // Mide el tiempo que tarda en volver el eco
+  long duration = pulseIn(echoPin, HIGH, timeoutEcho);
+
+  // Si no hay eco devuelve -1
+  if (duration == 0) return -1;
+
+  // Convierte el tiempo a distancia en centímetros
+  return duration * 0.034 / 2;
 }
 
 void loop() {
-  int distancia = medirDistancia();
-  Serial.println(distancia);
+  unsigned long ahora = millis();
 
-  if (distancia > 0 && distancia < UMBRAL) {
-    tapa.write(100);       // abre
-    delay(3000);           // espera a que boten la basura
-    tapa.write(0);         // cierra
+  // Realiza mediciones cada cierto tiempo sin bloquear el programa
+  if (ahora - ultimaMedicion >= intervaloMedicion) {
+
+    ultimaMedicion = ahora;
+
+    // Obtiene la distancia medida
+    int distance = medirDistancia();
+
+    // Muestra la distancia en el monitor serie
+    Serial.print("Distancia medida: ");
+
+    if (distance < 0) {
+      Serial.println("sin eco");
+    } else {
+      Serial.print(distance);
+      Serial.println(" cm");
+    }
+
+    // Verifica si existe un objeto dentro del rango establecido
+    bool objetoCerca = (distance > 0 && distance < umbralDistancia);
+
+    // Abre la tapa si detecta un objeto y está cerrada
+    if (objetoCerca && !tapaAbierta) {
+
+      tapaServo.write(anguloAbierto);
+      tapaAbierta = true;
+      tiempoInicioApertura = ahora;
+
+      Serial.println("Objeto detectado. Tapa abierta.");
+    }
+
+    // Si el objeto sigue presente, reinicia el temporizador
+    else if (objetoCerca && tapaAbierta) {
+      tiempoInicioApertura = ahora;
+    }
   }
 
-  delay(100);
+  // Cierra la tapa cuando pasa el tiempo establecido sin detectar actividad
+  if (tapaAbierta && (ahora - tiempoInicioApertura >= tiempoAbierto)) {
+
+    tapaServo.write(anguloCerrado);
+    tapaAbierta = false;
+
+    Serial.println("Tiempo cumplido. Tapa cerrada.");
+  }
 }`
   },
 
@@ -85,52 +177,84 @@ void loop() {
     lema: "La puerta que reconoce a quien llega",
     categoria: "Control de acceso",
     descripcion:
-      "Una puerta a escala que se abre cuando el sensor infrarrojo detecta presencia y confirma con un tono. Incluye un LED rojo mientras está cerrada y verde mientras permanece abierta.",
+      "Una puerta a escala, de cartón pintado, que se abre sola cuando el sensor ultrasónico detecta un objeto o una persona a menos de 30 cm: el servomotor la gira a 90 grados y, cuando ya no hay nada cerca, la regresa a 0 grados para cerrarla. El programa mide la distancia con el sensor HC-SR04 y la muestra en el Monitor Serie.",
     integrantes: ["María Fernanda González Pedraza", "Karen Mariana Puin Jiménez", "Sara Valentina González Soler"],
-    componentes: ["Arduino UNO", "Sensor ultrasónico HC-SR04", "Servomotor", "Protoboard y jumpers", "Maqueta de la puerta"],
+    componentes: ["Arduino UNO", "Sensor ultrasónico HC-SR04", "Servomotor", "Protoboard y cables jumper", "Puerta de cartón pintado", "Base de cartón"],
+    ext: "jpeg",
+    video: "videos/puerta-automatica.mp4",
+    videoTexto: "Así funciona el prototipo: cuando el sensor detecta un objeto a menos de 30 cm, el servomotor abre la puerta y luego la cierra.",
     diagramaTexto:
       "El sensor ultrasónico HC-SR04 usa el pin 7 para TRIG y el pin 6 para ECHO. El servomotor de la puerta recibe su señal por el pin 5. El Arduino entrega 5 V y GND a la protoboard, y desde ella se alimentan el sensor (VCC y GND) y el servomotor (cables rojo y café).",
     evidencias: [
-      { titulo: "Maqueta de la puerta", texto: "Construimos la puerta en cartón paja y le pegamos el servomotor en la bisagra." },
-      { titulo: "Luces y sonido", texto: "Probamos que el LED rojo se apague, el verde se encienda y el buzzer suene cuando alguien se acerca." },
-      { titulo: "Puerta funcionando", texto: "La puerta se abre al detectar presencia y vuelve a cerrarse cuando la persona se aleja." }
+      { titulo: "Componentes en la base", texto: "Protoboard, sensor ultrasónico y cables sobre la base de cartón, antes de conectar." },
+      { titulo: "El sensor ultrasónico", texto: "El sensor HC-SR04 con sus cables de conexión." },
+      { titulo: "Servomotor en la puerta", texto: "El servomotor fijado en el marco de la puerta de cartón pintada." },
+      { titulo: "Conectando al Arduino", texto: "Se inserta un cable en los pines del Arduino UNO." },
+      { titulo: "Cables al Arduino", texto: "Se conectan los cables entre el Arduino UNO y la protoboard." },
+      { titulo: "Protoboard", texto: "Se coloca un cable en la protoboard." },
+      { titulo: "Conectando con los apuntes", texto: "Una estudiante conecta un cable en la protoboard con su cuaderno de apuntes al lado." },
+      { titulo: "Concentrada en el montaje", texto: "Una estudiante revisa con atención las conexiones sobre la protoboard." },
+      { titulo: "Armando el circuito", texto: "Se conectan los cables al Arduino mientras se arma el circuito." },
+      { titulo: "Vista de las conexiones", texto: "Vista desde arriba de las conexiones entre el Arduino, la protoboard y el sensor." },
+      { titulo: "Sensor y Arduino conectados", texto: "Una estudiante conecta cables al Arduino, con el sensor ultrasónico a su lado, visto desde arriba." },
+      { titulo: "Conectando junto al computador", texto: "Una estudiante conecta un cable al Arduino con el diagrama de Tinkercad abierto en la pantalla." },
+      { titulo: "Siguiendo el diagrama", texto: "Se arma el circuito siguiendo el diagrama de conexiones que se ve en el computador." },
+      { titulo: "Revisando conexiones", texto: "Se revisan las conexiones del sensor, la protoboard y el Arduino." },
+      { titulo: "Montaje con el computador", texto: "El montaje junto al computador, donde están el diagrama y el programa." },
+      { titulo: "Prototipo armado", texto: "La puerta con el servomotor y el sensor, la protoboard y el Arduino conectado por USB." }
     ],
-    codigo: `#include <Servo.h>
+    codigo: `#include <Servo.h> // Incluye la librería que permite controlar el servomotor
 
-int SENSOR = 2;
-int LED_ROJO = 4;
-int LED_VERDE = 5;
-int BUZZER = 7;
+Servo s1; // Crea el objeto s1 para controlar el servomotor
 
-Servo puerta;
-bool estaAbierta = false;
+const int trigPin = 7; // Define el pin 7 como salida para enviar la señal del sensor ultrasónico
+const int echoPin = 6; // Define el pin 6 como entrada para recibir el eco del sensor
 
-void setup() {
-  pinMode(SENSOR, INPUT);
-  pinMode(LED_ROJO, OUTPUT);
-  pinMode(LED_VERDE, OUTPUT);
-  pinMode(BUZZER, OUTPUT);
-  puerta.attach(9);
-  puerta.write(0);
+long duration; // Guarda el tiempo que tarda en regresar la señal ultrasónica
+
+int distanceCm, distanceInch; // Declara variables para guardar la distancia en centímetros y pulgadas
+
+void setup()
+{
+  Serial.begin(9600); // Inicia la comunicación serial a 9600 baudios
+
+  pinMode(trigPin, OUTPUT); // Configura el pin Trig como salida
+  pinMode(echoPin, INPUT); // Configura el pin Echo como entrada
+
+  s1.attach(5); // Conecta el servomotor al pin 5 de Arduino
 }
 
-void loop() {
-  bool hayPresencia = (digitalRead(SENSOR) == LOW);
+void loop()
+{
+  digitalWrite(trigPin, LOW); // Mantiene apagada la señal del sensor
+  delayMicroseconds(2); // Espera 2 microsegundos
 
-  if (hayPresencia && !estaAbierta) {
-    tone(BUZZER, 1200, 150);
-    puerta.write(90);
-    estaAbierta = true;
-    delay(4000);
+  digitalWrite(trigPin, HIGH); // Envía una señal ultrasónica
+  delayMicroseconds(10); // Mantiene la señal durante 10 microsegundos
+
+  digitalWrite(trigPin, LOW); // Finaliza el envío de la señal
+
+  duration = pulseIn(echoPin, HIGH); // Mide el tiempo que tarda en regresar el eco
+
+  distanceCm = duration * 0.034 / 2; // Calcula la distancia en centímetros
+  distanceInch = duration * 0.0133 / 2; // Calcula la distancia en pulgadas
+
+  Serial.println("Distance: "); // Muestra el texto Distance en el monitor serial
+  Serial.println(distanceCm); // Muestra la distancia detectada en centímetros
+
+  delay(50); // Espera 50 milisegundos antes de repetir la medición
+
+  if (distanceCm < 30) // Comprueba si un objeto está a menos de 30 centímetros
+  {
+    s1.write(90); // Mueve el servomotor a 90 grados para abrir la puerta
+    delay(1000); // Espera 1 segundo
   }
 
-  if (estaAbierta && !hayPresencia) {
-    puerta.write(0);
-    estaAbierta = false;
+  else // Si el objeto está a 30 centímetros o más
+  {
+    s1.write(0); // Regresa el servomotor a 0 grados para cerrar la puerta
+    delay(10); // Espera 10 milisegundos
   }
-
-  digitalWrite(LED_VERDE, estaAbierta);
-  digitalWrite(LED_ROJO, !estaAbierta);
 }`
   },
 
@@ -238,110 +362,210 @@ void loop() {
     lema: "El nombre del colegio, letra por letra",
     categoria: "Matriz de LED",
     descripcion:
-      "Una matriz LED 8x8 con chip MAX7219 que muestra mensajes que se desplazan y tres dibujos de 8x8. El programa se diseñó primero con bloques y luego se tradujo a código de Arduino; al final el letrero dice el nombre del colegio y los nombres de quienes lo hicieron.",
+      "Una matriz LED 8x8 con chip MAX7219 que muestra mensajes que se desplazan de derecha a izquierda, seis figuras y los nombres del grupo, del colegio y del profesor. Cada letra se dibuja con columnas de 5x7 puntos y el programa las desplaza con ciclos for, usando la librería LedControl.",
     integrantes: ["Juan José Caro Aguirre", "Andrés Fernando Bohórquez Soler"],
     componentes: ["Arduino UNO", "Matriz LED 8x8 con MAX7219", "Protoboard y jumpers"],
+    ext: "jpeg",
     diagramaTexto:
       "En Tinkercad la matriz LED 8x8 se representa con un chip ATtiny. Sus tres cables de señal van a los pines digitales 2 (DIN), 3 (CS) y 4 (CLK); el cable verde lleva los 5 V y el amarillo el GND del Arduino, y todo se arma sobre la protoboard.",
     evidencias: [
-      { titulo: "Programación en bloques", texto: "Armamos el programa con bloques: los pines de la matriz, los mensajes de texto y tres dibujos de 8x8." },
-      { titulo: "De bloques a código", texto: "Pasamos cada bloque a una línea de Arduino: setup, loop, delay y las funciones para escribir y dibujar." },
-      { titulo: "Letrero funcionando", texto: "La matriz muestra el saludo, los tres dibujos y los mensajes con el colegio y los nombres del grupo." }
+      { titulo: "Simulación en Tinkercad", texto: "El circuito armado en Tinkercad, visto en la pantalla del computador." },
+      { titulo: "Escribiendo el código", texto: "Un estudiante escribe el programa; en la pantalla se ve el código junto al Arduino de Tinkercad." },
+      { titulo: "Componentes", texto: "Protoboard, Arduino UNO, matriz LED 8x8, cable USB y cables jumper sobre la mesa." },
+      { titulo: "Montando la matriz", texto: "Se coloca la matriz LED 8x8 sobre la protoboard." },
+      { titulo: "Todo montado", texto: "El Arduino UNO y la matriz LED montados en la protoboard, listos para conectar los cables." },
+      { titulo: "El primer cable", texto: "Se conecta el primer cable entre el Arduino y la matriz." },
+      { titulo: "Más conexiones", texto: "Se agregan más cables entre el Arduino y la matriz." },
+      { titulo: "Cableado", texto: "Los cables de colores unen los pines del Arduino con los de la matriz." },
+      { titulo: "Letrero conectado", texto: "El letrero armado: Arduino, protoboard, matriz LED y todos los cables conectados." }
     ],
-    codigo: `#include <MD_Parola.h>             // librería para escribir texto en la matriz
-#include <MD_MAX72xx.h>            // librería del chip MAX7219 de la matriz
+    codigo: `#include <LedControl.h>
 
-int pinDIN = 2;                    // pin de datos (DIN)
-int pinCLK = 4;                    // pin del reloj (CLK)
-int pinCS = 3;                     // pin de selección (CS)
+LedControl lc = LedControl(2, 4, 3, 1);
 
-// Crea el panel con 1 matriz. Si el texto sale al revés, cambia FC16_HW por GENERIC_HW o PAROLA_HW
-MD_Parola panel = MD_Parola(MD_MAX72XX::FC16_HW, pinDIN, pinCLK, pinCS, 1);
-MD_MAX72XX *mx;                    // sirve para dibujar las imágenes punto por punto
+// Orientación que te funcionó: texto derecho y moviéndose de derecha a izquierda
+const int ORIENTACION = 5;
 
-char buffer[60];                   // guarda el texto que se está mostrando
-
-// Cada número es una fila del dibujo: 1 = LED encendido, 0 = apagado
-byte carita1[8] = {B00111100, B01000010, B10100101, B10000001, B10100101, B10011001, B01000010, B00111100};
-byte carita2[8] = {B00111100, B01000010, B10100101, B10000001, B10011001, B10100101, B01000010, B00111100};
-byte dibujo3[8] = {B11111111, B10000001, B10111101, B10100101, B10100101, B10111101, B10000001, B11111111};
-
-// Función que escribe un mensaje que se desplaza por la matriz
-void escribir(String texto) {
-  texto.toCharArray(buffer, 60);   // pasa el mensaje a una lista de caracteres
-  panel.displayClear();            // limpia la matriz
-  panel.displayText(buffer, PA_CENTER, 60, 0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);   // el 60 es la velocidad
-  while (!panel.displayAnimate()) { }   // espera a que el mensaje termine de pasar
+// Enciende el punto (x, y): x va de izquierda a derecha y y de arriba hacia abajo
+void punto(int x, int y, bool encendido) {
+  switch (ORIENTACION) {
+    case 0: lc.setLed(0, y, x, encendido); break;
+    case 1: lc.setLed(0, y, 7 - x, encendido); break;
+    case 2: lc.setLed(0, 7 - y, x, encendido); break;
+    case 3: lc.setLed(0, 7 - y, 7 - x, encendido); break;
+    case 4: lc.setLed(0, x, y, encendido); break;
+    case 5: lc.setLed(0, x, 7 - y, encendido); break;
+    case 6: lc.setLed(0, 7 - x, y, encendido); break;
+    case 7: lc.setLed(0, 7 - x, 7 - y, encendido); break;
+  }
 }
 
-// Función que muestra un dibujo de 8x8 en la matriz
-void mostrarImagen(byte figura[]) {
-  panel.displayClear();            // limpia la matriz
-  for (int fila = 0; fila < 8; fila++) {   // recorre las 8 filas del dibujo
-    mx->setRow(fila, figura[fila]);        // enciende los LED de esa fila
+// ---------- Letras 5x7 (cada número es una columna, bit 0 = fila de arriba) ----------
+void obtenerLetra(char c, byte col[5]) {
+  static const byte vacio[5] = {0x00, 0x00, 0x00, 0x00, 0x00};
+  const byte *p = vacio;
+
+  static const byte A[5] = {0x7E, 0x09, 0x09, 0x09, 0x7E};
+  static const byte B[5] = {0x7F, 0x49, 0x49, 0x49, 0x36};
+  static const byte C[5] = {0x3E, 0x41, 0x41, 0x41, 0x22};
+  static const byte D[5] = {0x7F, 0x41, 0x41, 0x22, 0x1C};
+  static const byte E[5] = {0x7F, 0x49, 0x49, 0x49, 0x41};
+  static const byte F[5] = {0x7F, 0x09, 0x09, 0x09, 0x01};
+  static const byte G[5] = {0x3E, 0x41, 0x49, 0x49, 0x7A};
+  static const byte H[5] = {0x7F, 0x08, 0x08, 0x08, 0x7F};
+  static const byte I[5] = {0x00, 0x41, 0x7F, 0x41, 0x00};
+  static const byte J[5] = {0x20, 0x40, 0x41, 0x3F, 0x01};
+  static const byte L[5] = {0x7F, 0x40, 0x40, 0x40, 0x40};
+  static const byte M[5] = {0x7F, 0x02, 0x0C, 0x02, 0x7F};
+  static const byte N[5] = {0x7F, 0x04, 0x08, 0x10, 0x7F};
+  static const byte O[5] = {0x3E, 0x41, 0x41, 0x41, 0x3E};
+  static const byte P[5] = {0x7F, 0x09, 0x09, 0x09, 0x06};
+  static const byte Q[5] = {0x3E, 0x41, 0x51, 0x21, 0x5E};
+  static const byte R[5] = {0x7F, 0x09, 0x19, 0x29, 0x46};
+  static const byte S[5] = {0x46, 0x49, 0x49, 0x49, 0x31};
+  static const byte T[5] = {0x01, 0x01, 0x7F, 0x01, 0x01};
+  static const byte U[5] = {0x3F, 0x40, 0x40, 0x40, 0x3F};
+  static const byte V[5] = {0x1F, 0x20, 0x40, 0x20, 0x1F};
+  static const byte X[5] = {0x63, 0x14, 0x08, 0x14, 0x63};
+  static const byte Y[5] = {0x07, 0x08, 0x70, 0x08, 0x07};
+  static const byte Z[5] = {0x61, 0x51, 0x49, 0x45, 0x43};
+  static const byte PUNTO[5] = {0x00, 0x60, 0x60, 0x00, 0x00};
+  static const byte DOSPUNTOS[5] = {0x00, 0x36, 0x36, 0x00, 0x00};
+
+  switch (c) {
+    case 'A': p = A; break;
+    case 'B': p = B; break;
+    case 'C': p = C; break;
+    case 'D': p = D; break;
+    case 'E': p = E; break;
+    case 'F': p = F; break;
+    case 'G': p = G; break;
+    case 'H': p = H; break;
+    case 'I': p = I; break;
+    case 'J': p = J; break;
+    case 'L': p = L; break;
+    case 'M': p = M; break;
+    case 'N': p = N; break;
+    case 'O': p = O; break;
+    case 'P': p = P; break;
+    case 'Q': p = Q; break;
+    case 'R': p = R; break;
+    case 'S': p = S; break;
+    case 'T': p = T; break;
+    case 'U': p = U; break;
+    case 'V': p = V; break;
+    case 'X': p = X; break;
+    case 'Y': p = Y; break;
+    case 'Z': p = Z; break;
+    case '.': p = PUNTO; break;
+    case ':': p = DOSPUNTOS; break;
+  }
+  for (int i = 0; i < 5; i++) col[i] = p[i];
+}
+
+// ---------- Devuelve la columna número "idx" del texto completo ----------
+byte columnaTexto(const char *texto, int idx) {
+  int largo = strlen(texto);
+  if (idx < 0 || idx >= largo * 6) return 0;   // fuera del texto = apagado
+  int letra = idx / 6;
+  int k = idx % 6;
+  if (k == 5) return 0;                        // espacio entre letras
+  byte col[5];
+  obtenerLetra(texto[letra], col);
+  return col[k];
+}
+
+// ---------- Desplaza el texto hacia la izquierda ----------
+void scrollTexto(const char *texto, int velocidadMs) {
+  int total = strlen(texto) * 6;
+  for (int offset = -8; offset < total; offset++) {
+    for (int x = 0; x < 8; x++) {
+      byte b = columnaTexto(texto, offset + x);
+      for (int y = 0; y < 8; y++) {
+        punto(x, y, (b >> y) & 1);
+      }
+    }
+    delay(velocidadMs);
+  }
+}
+
+// ---------- Dibujo de figuras ----------
+void dibujar(const char *figura) {
+  for (int y = 0; y < 8; y++) {
+    for (int x = 0; x < 8; x++) {
+      punto(x, y, figura[y * 8 + x] == '1');
+    }
   }
 }
 
 void setup() {
-  panel.begin();                   // inicia la matriz
-  panel.setIntensity(5);           // brillo de 0 a 15
-  mx = panel.getGraphicObject();   // permite dibujar punto por punto
-  escribir("HOLA MUNDOOO");        // mensaje de bienvenida (una sola vez)
+  lc.shutdown(0, false);
+  lc.setIntensity(0, 8);
+  lc.clearDisplay(0);
+
+  scrollTexto("HOLA MUNDO", 100);      // se ejecuta una sola vez
 }
 
 void loop() {
-  mostrarImagen(carita1);          // primer dibujo
-  delay(2000);                     // espera 2 segundos
-  mostrarImagen(carita2);          // segundo dibujo
-  delay(2000);
-  mostrarImagen(dibujo3);          // tercer dibujo
-  delay(2000);
+  // 1. Nombres de los estudiantes
+  scrollTexto("JUAN CARO", 100);
+  scrollTexto("ANDRES SOLER", 100);
 
-  escribir("ESTE ES MI PROYECTO");
-  delay(2000);
+  // 2. Figuras divertidas
+  dibujar("0011110001000010101010011000010110000101101010010100001000111100");  // carita
+  delay(1500);
+  dibujar("0110011010011001010000100010010000100100010000101001100101100110");  // carita guiño
+  delay(1500);
+  dibujar("1111111111111111110110001001100010011000110110001111111111111111");  // marco
+  delay(1500);
+  dibujar("0110011011111111111111111111111101111110001111000001100000000000");  // corazón
+  delay(1500);
+  dibujar("0001100000111100011111101101101111111111111001110111111001000010");  // extraterrestre
+  delay(1500);
+  dibujar("0001100000011000111111110111111000111100001111000110011001000010");  // estrella
+  delay(1500);
 
-  escribir("I.E. TECNICA JOSE CAYETANO VASQUEZ");      // nombre del colegio
-  delay(1000);
-  escribir("PRACTICANTE: MAICOL CRUZ");                // nombre del practicante
-  delay(1000);
-  escribir("HECHO POR: ANDRES BOHORQUEZ Y JUAN JOSE CARO");   // nombres de los estudiantes
-  delay(2000);
+  // 3. Nombre del colegio
+  scrollTexto("I.E. TECNICA JOSE CAYETANO VASQUEZ", 100);
+
+  // 4. Profesor
+  scrollTexto("PROFESOR: MAICOL ALEXANDER CRUZ CRUZ", 100);
 }`
   },
 
   {
     id: "medidor-agua",
     nombre: "Medidor de agua con Arduino",
-    lema: "Cuánta agua queda, en tres colores",
+    lema: "Cuánta agua queda, en cuatro colores",
     categoria: "Sensor de nivel",
     descripcion:
-      "Un sensor mide el nivel del agua de un vaso y lo muestra con cuatro LED: se encienden en orden, del rojo al azul, a medida que el agua sube. El programa convierte la lectura del sensor en un porcentaje con map() y usa un ciclo for para revisar los LED.",
+      "Un sensor mide el nivel del agua de un vaso y avisa con luces y sonido: el LED verde indica nivel normal (hasta la mitad del sensor), el amarillo se enciende al pasar de la mitad, y cuando el agua está por llenarse se enciende el LED rojo y suena un buzzer. El programa convierte la lectura del sensor en un porcentaje con map().",
     integrantes: ["Rafael Armando Jiménez Arias", "Manolo Steven Boyacá Jiménez"],
-    componentes: ["Arduino UNO", "Sensor de humedad usado como sensor de nivel", "4 LED (rojo, amarillo, verde y azul)", "Protoboard", "Vaso con agua"],
+    componentes: ["Arduino UNO", "Sensor de humedad usado como sensor de nivel", "LED rojo, amarillo y verde", "Buzzer", "Protoboard", "Vaso con agua"],
     diagramaTexto:
-      "Un sensor de humedad funciona aquí como sensor de nivel dentro de un vaso con agua: su señal entra por el pin analógico A0 y su alimentación (VCC y GND) viene de la protoboard, que recibe los 5 V y el GND del Arduino. Cuatro LED indican el nivel: azul en el pin 5, verde en el 4, amarillo en el 3 y rojo en el 2.",
+      "Un sensor de humedad funciona aquí como sensor de nivel dentro de un vaso con agua: su señal entra por el pin analógico A0 y su alimentación (VCC y GND) viene de la protoboard, que recibe los 5 V y el GND del Arduino. Los LED están en los pines 2 (rojo), 3 (amarillo) y 4 (verde). En el montaje se agregó un buzzer en el pin 7, que todavía no aparece en el diagrama.",
     evidencias: [
-      { titulo: "Montaje del sensor", texto: "Fijamos el sensor dentro del vaso y conectamos los cuatro LED a la protoboard." },
+      { titulo: "Montaje del sensor", texto: "Fijamos el sensor dentro del vaso y conectamos los LED y el buzzer a la protoboard." },
       { titulo: "Llenando el recipiente", texto: "Fuimos agregando agua poco a poco para ver cómo cambia la lectura en el Monitor Serie." },
-      { titulo: "LED según el nivel", texto: "Cuando el agua sube se encienden en orden el LED rojo, el amarillo, el verde y el azul." }
+      { titulo: "Luces y buzzer según el nivel", texto: "Con nivel normal se enciende el verde; al pasar de la mitad, el amarillo; y cuando está por llenarse, el rojo y suena el buzzer." }
     ],
     codigo: `// Medidor de agua con Arduino
-// El sensor mide el nivel del agua y los LED se encienden a medida que sube.
+// El sensor mide el nivel del agua; los LED y el buzzer avisan en qué estado está.
 
-int sensor = A0;      // señal del sensor
-int led1 = 2;         // LED rojo
-int led2 = 3;         // LED amarillo
-int led3 = 4;         // LED verde
-int led4 = 5;         // LED azul
+int sensor = A0;        // señal del sensor
+int ledRojo = 2;        // LED rojo: el agua está por llenarse
+int ledAmarillo = 3;    // LED amarillo: el nivel ya pasó de la mitad
+int ledVerde = 4;       // LED verde: nivel normal (hasta la mitad del sensor)
+int buzzer = 7;         // buzzer: suena cuando el agua se va a llenar
 
-int lectura;          // valor que entrega el sensor
-int nivel;            // nivel de agua en porcentaje
+int lectura;            // valor que entrega el sensor
+int nivel;              // nivel de agua en porcentaje
 
 void setup() {
-  pinMode(led1, OUTPUT);
-  pinMode(led2, OUTPUT);
-  pinMode(led3, OUTPUT);
-  pinMode(led4, OUTPUT);
+  pinMode(ledRojo, OUTPUT);
+  pinMode(ledAmarillo, OUTPUT);
+  pinMode(ledVerde, OUTPUT);
+  pinMode(buzzer, OUTPUT);
   Serial.begin(9600);
 }
 
@@ -360,23 +584,22 @@ void loop() {
   Serial.println(" %");
 
   // Primero se apagan todos los LED
-  digitalWrite(led1, LOW);
-  digitalWrite(led2, LOW);
-  digitalWrite(led3, LOW);
-  digitalWrite(led4, LOW);
+  digitalWrite(ledRojo, LOW);
+  digitalWrite(ledAmarillo, LOW);
+  digitalWrite(ledVerde, LOW);
 
-  // Luego se encienden según el nivel del agua
+  // Luego se enciende lo que corresponde al nivel del agua
   if (nivel >= 10) {
-    digitalWrite(led1, HIGH);     // rojo: ya hay un poco de agua
+    digitalWrite(ledVerde, HIGH);       // verde: hay agua y el nivel es normal
   }
-  if (nivel >= 35) {
-    digitalWrite(led2, HIGH);     // amarillo
-  }
-  if (nivel >= 60) {
-    digitalWrite(led3, HIGH);     // verde
+  if (nivel > 50) {
+    digitalWrite(ledAmarillo, HIGH);    // amarillo: ya pasó de la mitad del sensor
   }
   if (nivel >= 85) {
-    digitalWrite(led4, HIGH);     // azul: casi lleno
+    digitalWrite(ledRojo, HIGH);        // rojo: el agua se va a llenar
+    tone(buzzer, 1000);                 // el buzzer suena mientras siga así
+  } else {
+    noTone(buzzer);                     // si el nivel baja, el buzzer se apaga
   }
 
   delay(500);   // espera medio segundo antes de volver a medir
@@ -441,12 +664,17 @@ void loop() {
       "Una matriz de LED 8x8 donde un punto luminoso se desplaza según el movimiento del joystick. El reto fue entender que el joystick no entrega una posición, sino dos valores de 0 a 1023 que hay que traducir a coordenadas.",
     integrantes: ["Alisson Sarith Cuervo Pulido", "Neymis Taliana Cañas Chaverra"],
     componentes: ["Arduino UNO", "Matriz LED 8x8 con MAX7219", "Módulo joystick", "Protoboard y jumpers"],
+    ext: "jpeg",
     diagramaTexto:
       "El módulo joystick recibe +5 V y GND y entrega sus ejes (VRx y VRy) y el pulsador SW; en el diagrama la salida VRy se rotula A1. La matriz LED 8x8 con MAX7219 usa cinco cables: VCC, GND, DIN, CS y CLK, que llegan a la hilera de pines digitales del Arduino. La protoboard distribuye la alimentación.",
     evidencias: [
-      { titulo: "Leyendo el joystick", texto: "Imprimimos en el monitor serie los valores de 0 a 1023 que entrega cada eje." },
-      { titulo: "De valores a coordenadas", texto: "Usamos map() para convertir esos valores en una fila y una columna de la matriz." },
-      { titulo: "Punto de luz en movimiento", texto: "El punto recorre la matriz al mover el joystick con la mano." }
+      { titulo: "Componentes", texto: "Cables, matriz LED 8x8, módulo joystick, Arduino UNO y cable USB sobre la mesa." },
+      { titulo: "Preparando la matriz", texto: "Se sostiene la matriz LED 8x8 para empezar a conectarla." },
+      { titulo: "Conectando el Arduino", texto: "Se conecta el cable USB al Arduino UNO." },
+      { titulo: "Cables en el Arduino", texto: "Cables de colores conectados a los pines del Arduino UNO." },
+      { titulo: "Conectando los cables", texto: "Una estudiante organiza y conecta los cables junto al computador." },
+      { titulo: "Trabajando en el computador", texto: "Una estudiante trabaja en el computador durante el montaje." },
+      { titulo: "Circuito armado", texto: "Una estudiante revisa el circuito armado: Arduino, matriz LED y cables conectados." }
     ],
     codigo: `#include <LedControl.h>
 
@@ -544,59 +772,242 @@ void loop() {
 
   {
     id: "sonar",
-    nombre: "Sonar con Arduino",
+    nombre: "Sonar con Arduino y sensor ultrasónico",
     lema: "Ver con sonido lo que el ojo no alcanza",
     categoria: "Sensor ultrasónico",
     descripcion:
-      "Un sensor ultrasónico montado sobre un servomotor barre un arco de 180° y mide la distancia en cada ángulo. Los datos se envían al computador por el puerto serie para dibujar un radar sencillo.",
+      "Un sensor ultrasónico HC-SR04 montado sobre un servomotor barre un arco de 20° a 160° y mide la distancia en cada posición. Cuando detecta un objeto a menos de 40 cm, parpadea un LED rojo y suena un zumbador. El ángulo y la distancia se muestran en el Monitor Serie del computador.",
     integrantes: ["Ángela Lizeth Soler Fonseca", "Diana Alejandra Galindo Caro"],
-    componentes: ["Arduino UNO", "Sensor ultrasónico HC-SR04", "Servomotor", "LED con resistencia", "Zumbador (buzzer)", "Protoboard"],
+    componentes: ["1 Arduino UNO", "1 Sensor ultrasónico HC-SR04", "1 Servomotor SG90", "1 LED rojo", "1 Resistencia de 220 Ω", "1 Zumbador", "Cables jumper macho-macho", "Cables jumper macho-hembra", "Silicona", "1 Base de cartón, madera o similar"],
     diagramaTexto:
-      "El sensor HC-SR04 usa el pin 4 para TRIG y el pin 2 para ECHO, y se alimenta con 5 V y GND. El servomotor recibe su señal por el pin 12. El LED va al pin 7 y el zumbador (buzzer) al pin 8; ambos regresan a GND por la protoboard.",
+      "El sensor HC-SR04 usa el pin 4 para TRIG y el pin 2 para ECHO, y se alimenta con 5 V y GND. El servomotor recibe su señal por el pin 11. El LED rojo va al pin 7 y el zumbador al pin 8; ambos regresan a GND por la protoboard.",
     evidencias: [
-      { titulo: "Sensor sobre el servo", texto: "Pegamos el sensor ultrasónico sobre el servomotor para que pueda girar." },
-      { titulo: "Barrido de 180 grados", texto: "El servo gira de a un grado y el sensor mide la distancia en cada posición." },
-      { titulo: "Datos en el computador", texto: "Los valores de ángulo y distancia aparecen en el monitor serie, listos para dibujar el radar." }
+      { titulo: "Sensor sobre el servo", texto: "Se pega el sensor ultrasónico sobre el servomotor para que pueda girar." },
+      { titulo: "Barrido del sensor", texto: "El servo avanza de 2 en 2 grados entre 20° y 160° y el sensor mide la distancia en cada posición." },
+      { titulo: "Alerta por objeto", texto: "Si hay un objeto a menos de 40 cm, parpadea el LED rojo y suena el zumbador; los datos salen en el Monitor Serie." }
     ],
     codigo: `#include <Servo.h>
 
-int TRIG = 9;
-int ECHO = 8;
 
-Servo base;
+Servo servoSonar;
 
+
+// -------------------------
+// PINES
+// -------------------------
+const int TRIG = 4;
+const int ECHO = 2;
+const int SERVO = 11;
+const int LED_ROJO = 7;
+const int ZUMBADOR = 8;
+
+
+// -------------------------
+// CONFIGURACIÓN DEL SERVO
+// -------------------------
+int anguloMinimo = 20;
+int anguloCentro = 90;
+int anguloMaximo = 160;
+
+
+// Velocidad del barrido
+int pasoServo = 2;
+int tiempoServo = 40;
+
+
+// -------------------------
+// CONFIGURACIÓN DEL SONAR
+// -------------------------
+const int DISTANCIA_ALERTA = 40;
+
+
+long duracion;
+float distancia;
+
+
+
+
+// =========================
+// CONFIGURACIÓN INICIAL
+// =========================
 void setup() {
+
+
   pinMode(TRIG, OUTPUT);
   pinMode(ECHO, INPUT);
-  base.attach(6);
+
+
+  pinMode(LED_ROJO, OUTPUT);
+  pinMode(ZUMBADOR, OUTPUT);
+
+
+  servoSonar.attach(SERVO);
+
+
+  // Colocar el servo en el centro
+  servoSonar.write(anguloCentro);
+  delay(2000);
+
+
   Serial.begin(9600);
 }
 
-int medirDistancia() {
+
+
+
+// =========================
+// PROGRAMA PRINCIPAL
+// =========================
+void loop() {
+
+
+  // -------------------------
+  // Barrido de izquierda a derecha
+  // -------------------------
+  for (int angulo = anguloMinimo;
+       angulo <= anguloMaximo;
+       angulo += pasoServo) {
+
+
+    servoSonar.write(angulo);
+
+
+    delay(tiempoServo);
+
+
+    distancia = medirDistancia();
+
+
+    mostrarDatos(angulo);
+
+
+    verificarObjeto();
+  }
+
+
+
+
+  // -------------------------
+  // Barrido de derecha a izquierda
+  // -------------------------
+  for (int angulo = anguloMaximo;
+       angulo >= anguloMinimo;
+       angulo -= pasoServo) {
+
+
+    servoSonar.write(angulo);
+
+
+    delay(tiempoServo);
+
+
+    distancia = medirDistancia();
+
+
+    mostrarDatos(angulo);
+
+
+    verificarObjeto();
+  }
+}
+
+
+
+
+// =========================
+// MEDIR DISTANCIA
+// =========================
+float medirDistancia() {
+
+
   digitalWrite(TRIG, LOW);
   delayMicroseconds(2);
+
+
   digitalWrite(TRIG, HIGH);
   delayMicroseconds(10);
+
+
   digitalWrite(TRIG, LOW);
-  return pulseIn(ECHO, HIGH) * 0.034 / 2;
+
+
+  duracion = pulseIn(ECHO, HIGH, 30000);
+
+
+  // Si no recibe eco
+  if (duracion == 0) {
+    return 999;
+  }
+
+
+  float distanciaCalculada;
+
+
+  distanciaCalculada = duracion * 0.0343 / 2;
+
+
+  return distanciaCalculada;
 }
 
-// Mide en un angulo y envia "angulo,distancia" al computador
-void escanear(int angulo) {
-  base.write(angulo);
-  delay(30);                       // da tiempo a que el servo llegue
+
+
+
+// =========================
+// DETECCIÓN DE OBJETOS
+// =========================
+void verificarObjeto() {
+
+
+  if (distancia <= DISTANCIA_ALERTA) {
+
+
+    digitalWrite(LED_ROJO, HIGH);
+
+
+    tone(ZUMBADOR, 1000);
+
+
+    delay(80);
+
+
+    digitalWrite(LED_ROJO, LOW);
+
+
+    noTone(ZUMBADOR);
+
+
+    delay(80);
+  }
+
+
+  else {
+
+
+    digitalWrite(LED_ROJO, LOW);
+
+
+    noTone(ZUMBADOR);
+  }
+}
+
+
+
+
+// =========================
+// MONITOR SERIAL
+// =========================
+void mostrarDatos(int angulo) {
+
+
+  Serial.print("Angulo: ");
   Serial.print(angulo);
-  Serial.print(",");
-  Serial.println(medirDistancia());
-}
 
-void loop() {
-  for (int angulo = 15; angulo <= 165; angulo++) {
-    escanear(angulo);              // barrido de ida
-  }
-  for (int angulo = 165; angulo >= 15; angulo--) {
-    escanear(angulo);              // barrido de vuelta
-  }
+
+  Serial.print(" grados | Distancia: ");
+  Serial.print(distancia);
+
+
+  Serial.println(" cm");
 }`
   },
 
@@ -608,13 +1019,20 @@ void loop() {
     descripcion:
       "Una ruleta movida por un motor paso a paso 28BYJ-48 con driver ULN2003. El programa usa random() para elegir cuántos pasos gira el motor, entre una y dos vueltas completas (2048 pasos es una vuelta), así que se detiene en un lugar distinto cada vez. Después de cinco segundos vuelve a girar.",
     integrantes: ["Carlos Adrián Silva Plazas", "David Fernando Plazas Fuentes"],
-    componentes: ["Arduino UNO", "Motor paso a paso 28BYJ-48", "Driver ULN2003", "Jumpers", "Base de la ruleta"],
+    componentes: ["Arduino UNO", "Motor paso a paso 28BYJ-48", "Driver ULN2003", "Ruleta de colores numerada", "Cables jumper", "Base de la ruleta"],
+    ext: "jpeg",
     diagramaTexto:
       "Este montaje mueve un motor paso a paso 28BYJ-48 con un driver ULN2003. Los cuatro pines de control del driver (IN1 a IN4) se conectan a los pines digitales 11, 10, 9 y 8 del Arduino, y el driver toma 5 V y GND directamente de la placa.",
     evidencias: [
-      { titulo: "Motor y driver", texto: "Conectamos el motor paso a paso al driver ULN2003 y el driver a los pines 8, 9, 10 y 11 del Arduino." },
-      { titulo: "Pasos al azar", texto: "random() elige cuántos pasos gira el motor, entre una y dos vueltas completas." },
-      { titulo: "Ruleta girando", texto: "El motor gira, se detiene en un punto distinto cada vez y, cinco segundos después, vuelve a girar." }
+      { titulo: "Cables jumper", texto: "Cables de colores sobre la mesa, listos para el montaje." },
+      { titulo: "Componentes", texto: "La ruleta de colores, el motor paso a paso, el driver, el Arduino UNO, el cable USB y los cables jumper sobre la mesa." },
+      { titulo: "Conectando al Arduino", texto: "Un estudiante conecta los cables al Arduino, con la ruleta y el computador sobre la mesa." },
+      { titulo: "Siguiendo las conexiones", texto: "Vista desde arriba: se continúan las conexiones entre el Arduino, el driver y el motor de la ruleta." },
+      { titulo: "Conectando el driver", texto: "Un estudiante conecta los cables al driver del motor." },
+      { titulo: "Cables y computador", texto: "Un estudiante conecta cables con el computador al lado y la ruleta en una esquina." },
+      { titulo: "Armando entre compañeros", texto: "Un estudiante conecta cables mientras sus compañeros trabajan atrás." },
+      { titulo: "Ajustando conexiones", texto: "Un estudiante ajusta las conexiones con la ruleta y el driver sobre la mesa." },
+      { titulo: "Revisando la ruleta", texto: "Un estudiante revisa las conexiones de la ruleta." }
     ],
     codigo: `#include <Stepper.h>                  // librería para controlar motores paso a paso
 

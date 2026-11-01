@@ -50,7 +50,7 @@ Fortalecer la lógica de programación mediante el diseño de prototipos con Ard
 | 6 | Alarma con detector de movimiento | Sensor de movimiento |
 | 7 | Matriz joystick | Entrada analógica |
 | 8 | Caseta de peaje | Sensor y servomotor |
-| 9 | Sonar con Arduino | Sensor ultrasónico |
+| 9 | Sonar con Arduino y sensor ultrasónico | Sensor ultrasónico |
 | 10 | Ruleta | Aleatoriedad |
 | 11 | Brazo robótico | Servomotores |
 
