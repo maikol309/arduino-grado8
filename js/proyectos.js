@@ -1056,44 +1056,98 @@ void loop() {
     lema: "Una mano mecánica que sigue tus giros",
     categoria: "Servomotores",
     descripcion:
-      "Un brazo de tres articulaciones, cada una movida por un servomotor. Tres potenciómetros funcionan como mando: al girar uno, la articulación correspondiente se mueve al ángulo equivalente.",
+      "Un brazo robótico hecho con palos de helado, tres servomotores (base, articulación y pinza) y un motor paso a paso que lo gira. El programa repite una secuencia: agarra un objeto con la pinza, gira 512 pasos (un cuarto de vuelta) con el motor paso a paso, lo deja en otro lugar y vuelve a su posición inicial.",
     integrantes: ["Sara Eliana Plazas Sanabria", "Laura Fernanda Sanabria Arias"],
-    componentes: ["Arduino UNO", "3 servomotores", "Motor paso a paso con driver ULN2003", "Módulo de alimentación para protoboard", "Protoboard y jumpers"],
+    componentes: ["Placa de Arduino UNO: Es el cerebro de nuestro proyecto, encargada de controlar todos los procesos del mismo mediante el código que encontrarás más adelante.", "Motor paso a paso: Mediante impulsos eléctricos, es posible controlar el giro del motor, el cual se efectúa de una forma discreta.", "Servomotores: motores de 5v con una reductora, lo que permite un gran manejo de su posición y una gran fuerza para su reducido tamaño.", "Protoboard: Tabla con orificios (pines) la cual está conectada internamente y usaremos para realizar nuestras conexiones para el proyecto.", "Palos de helado: Usaremos estos palos como estructura para dar forma a nuestra grúa."],
+    ext: "jpeg",
     diagramaTexto:
       "Tres servomotores (inferior, superior y pinza) reciben su señal por los pines 9, 10 y 11, y se alimentan desde los rieles de la protoboard. Un motor paso a paso con driver ULN2003 se controla con los pines 7, 6, 5 y 4. La protoboard recibe 5 V y GND del Arduino y lleva además un módulo de alimentación.",
     evidencias: [
-      { titulo: "Estructura del brazo", texto: "Cortamos y unimos las piezas del brazo y ubicamos un servomotor en cada articulación." },
-      { titulo: "Mando con potenciómetros", texto: "Cada potenciómetro controla una articulación: base, hombro y codo." },
-      { titulo: "Brazo en movimiento", texto: "Al girar los potenciómetros el brazo se mueve y puede alcanzar objetos pequeños." }
+      { titulo: "Materiales sobre la mesa", texto: "Servomotores, motor paso a paso con su driver, Arduino UNO, protoboard, cables jumper, cable USB y palos de helado." },
+      { titulo: "Conectando en la protoboard", texto: "Una estudiante conecta cables en la protoboard junto al Arduino y el driver." },
+      { titulo: "Probando un servomotor", texto: "Una estudiante prueba un servomotor con la estructura de palos de helado, con el programa abierto en el computador." },
+      { titulo: "Estructura de palos de helado", texto: "La base de palos de helado con el motor paso a paso y el brazo con sus servomotores." },
+      { titulo: "Trabajo junto al brazo", texto: "Estudiantes conectan los cables en la protoboard con el brazo y el computador a un lado." },
+      { titulo: "Conectando el driver", texto: "Una estudiante conecta los cables del driver del motor paso a paso, con el brazo detrás." },
+      { titulo: "Cables del Arduino", texto: "Una estudiante conecta los cables entre el Arduino y el driver del motor." },
+      { titulo: "Circuito y brazo", texto: "Una estudiante conecta cables en la protoboard; se ven el Arduino, el driver y el brazo." },
+      { titulo: "Revisando las conexiones", texto: "Dos estudiantes revisan los cables entre el brazo, la protoboard y el Arduino." }
     ],
-    codigo: `#include <Servo.h>
-
-Servo base;
-Servo hombro;
-Servo codo;
-
-int POT_BASE = A0;
-int POT_HOMBRO = A1;
-int POT_CODO = A2;
-
+    codigo: `//Proyecto -> Brazo robotico version1
+#include <Servo.h>                  // Librería para controlar los servomotores
+#include <Stepper.h>                // Librería para controlar el motor paso a paso
+Servo servomotor3; //Servomotor pinza
+Servo servomotor2; //Servomotor enmedio
+Servo servomotor1; //Servomotor abajo
+Stepper motor(2048, 4, 6, 5, 7);    // Motor de 2048 pasos por vuelta, conectado a los pines 4, 6, 5 y 7
 void setup() {
-  base.attach(3);
-  hombro.attach(5);
-  codo.attach(6);
+  servomotor3.attach(11);           // La pinza se conecta al pin 11
+  servomotor2.attach(10);           // El servo del medio se conecta al pin 10
+  servomotor1.attach(9);            // El servo de abajo se conecta al pin 9
+  motor.setSpeed(5);                // Velocidad del motor paso a paso: 5 vueltas por minuto
 }
-
-// Convierte una lectura de potenciometro en un angulo de servo
-int leerAngulo(int pin) {
-  int lectura = analogRead(pin);       // 0 a 1023
-  return map(lectura, 0, 1023, 0, 180);
-}
-
 void loop() {
-  base.write(leerAngulo(POT_BASE));
-  hombro.write(leerAngulo(POT_HOMBRO));
-  codo.write(leerAngulo(POT_CODO));
-
-  delay(15);   // deja respirar a los servos
+  //Reinicio
+  servomotor1.write(0);             // Los tres servos van a la posición 0° (posición inicial)
+  servomotor2.write(0);
+  servomotor3.write(0);
+  //motor.step(512);
+  delay(3000);                      // Espera 3 segundos antes de empezar
+  //COJE EL OBJETO
+  for(int i=0; i<=45; i++){         // La pinza se mueve de 0° a 45° poco a poco (se abre)
+    servomotor3.write(i);
+    delay(25);                      // Pausa de 25 ms en cada grado para que el movimiento sea suave
+  }
+  delay(1000);                      // Espera 1 segundo
+  for(int i=0; i<=90; i++){         // El servo del medio sube de 0° a 90°
+    servomotor2.write(i);
+    delay(25);
+  }
+  delay(1000);
+  for (int i=0; i<=90; i++){        // El servo de abajo sube de 0° a 90°: el brazo baja hasta el objeto
+    servomotor1.write(i);
+    delay(25);
+  }
+  delay(1000);
+  for(int i=45; i>=0; i--){         // La pinza vuelve de 45° a 0°: se cierra y agarra el objeto
+    servomotor3.write(i);
+    delay(25);
+  }
+  delay(1000);
+   for (int i = 90; i>=0; i--){     // El servo de abajo regresa de 90° a 0°: el brazo se levanta con el objeto
+    servomotor1.write(i);
+    delay(25);
+  }
+  delay(1000);
+  for (int i = 90; i>=0; i--){      // El servo del medio regresa de 90° a 0°
+    servomotor2.write(i);
+    delay(25);
+  }
+  delay(1000);
+  //GIRA CON EL OBJETO
+  motor.step(512);                  // El motor paso a paso gira 512 pasos (un cuarto de vuelta) con el objeto
+  delay(1000);
+  //DEJA EL OBJETO
+  for(int i=0; i<=90; i++){         // El servo del medio vuelve a subir de 0° a 90°
+    servomotor2.write(i);
+    delay(25);
+  }
+  delay(1000);
+  for (int i=0; i<=90; i++){        // El servo de abajo baja el brazo de 0° a 90°
+    servomotor1.write(i);
+    delay(25);
+  }
+  delay(1000);
+  for(int i=0; i<=45; i++){         // La pinza se abre de 0° a 45° y suelta el objeto
+    servomotor3.write(i);
+    delay(25);
+  }
+  delay(1000);
+  //VUELVE A LA POSICION INICIAL
+  servomotor1.write(0);             // Los servos de abajo y del medio regresan a 0°
+  servomotor2.write(0);
+  motor.step(-512);                 // El motor paso a paso gira 512 pasos hacia atrás y vuelve a su lugar
+  delay(3000);                      // Espera 3 segundos y el ciclo vuelve a empezar
 }`
   }
 ];
