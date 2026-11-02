@@ -539,32 +539,37 @@ void loop() {
     lema: "Cuánta agua queda, en cuatro colores",
     categoria: "Sensor de nivel",
     descripcion:
-      "Un sensor mide el nivel del agua de un vaso y avisa con luces y sonido: el LED verde indica nivel normal (hasta la mitad del sensor), el amarillo se enciende al pasar de la mitad, y cuando el agua está por llenarse se enciende el LED rojo y suena un buzzer. El programa convierte la lectura del sensor en un porcentaje con map().",
+      "Un sensor mide el nivel del agua de un vaso y avisa con cuatro LED y un buzzer. A medida que el agua sube se van encendiendo en orden: verde (hay agua), azul (el nivel sube), amarillo (pasó de la mitad) y rojo (se va a llenar), y con el rojo suena el buzzer. El programa convierte la lectura del sensor en un porcentaje con map().",
     integrantes: ["Rafael Armando Jiménez Arias", "Manolo Steven Boyacá Jiménez"],
-    componentes: ["Arduino UNO", "Sensor de humedad usado como sensor de nivel", "LED rojo, amarillo y verde", "Buzzer", "Protoboard", "Vaso con agua"],
+    componentes: ["Arduino UNO", "Sensor de humedad usado como sensor de nivel", "4 LED (verde, azul, amarillo y rojo)", "Buzzer", "Protoboard", "Vaso con agua"],
     diagramaTexto:
-      "Un sensor de humedad funciona aquí como sensor de nivel dentro de un vaso con agua: su señal entra por el pin analógico A0 y su alimentación (VCC y GND) viene de la protoboard, que recibe los 5 V y el GND del Arduino. Los LED están en los pines 2 (rojo), 3 (amarillo) y 4 (verde). En el montaje se agregó un buzzer en el pin 7, que todavía no aparece en el diagrama.",
+      "Un sensor de humedad funciona aquí como sensor de nivel dentro de un vaso con agua: su señal entra por el pin analógico A0 y su alimentación (VCC y GND) viene de la protoboard, que recibe los 5 V y el GND del Arduino. Los cuatro LED están en los pines 5 (verde), 4 (azul), 3 (amarillo) y 2 (rojo). El buzzer va al pin 7.",
     evidencias: [
       { titulo: "Montaje del sensor", texto: "Fijamos el sensor dentro del vaso y conectamos los LED y el buzzer a la protoboard." },
       { titulo: "Llenando el recipiente", texto: "Fuimos agregando agua poco a poco para ver cómo cambia la lectura en el Monitor Serie." },
-      { titulo: "Luces y buzzer según el nivel", texto: "Con nivel normal se enciende el verde; al pasar de la mitad, el amarillo; y cuando está por llenarse, el rojo y suena el buzzer." }
+      { titulo: "Luces y buzzer según el nivel", texto: "Al subir el agua se encienden en orden el LED verde, el azul, el amarillo y el rojo; con el rojo suena el buzzer." }
     ],
     codigo: `// Medidor de agua con Arduino
-// El sensor mide el nivel del agua; los LED y el buzzer avisan en qué estado está.
+// El sensor mide el nivel del agua; a medida que sube se van encendiendo los LED y, al final, suena el buzzer.
 
 int sensor = A0;        // señal del sensor
-int ledRojo = 2;        // LED rojo: el agua está por llenarse
+int ledVerde = 5;       // LED verde: ya hay agua (nivel bajo)
+int ledAzul = 4;        // LED azul: el nivel va subiendo
 int ledAmarillo = 3;    // LED amarillo: el nivel ya pasó de la mitad
-int ledVerde = 4;       // LED verde: nivel normal (hasta la mitad del sensor)
+int ledRojo = 2;        // LED rojo: el agua se va a llenar
 int buzzer = 7;         // buzzer: suena cuando el agua se va a llenar
+
+int valorSeco = 0;      // lectura con el sensor seco (calibración)
+int valorAgua = 666;     // lectura con el sensor totalmente sumergido (calibración)
 
 int lectura;            // valor que entrega el sensor
 int nivel;              // nivel de agua en porcentaje
 
 void setup() {
-  pinMode(ledRojo, OUTPUT);
-  pinMode(ledAmarillo, OUTPUT);
   pinMode(ledVerde, OUTPUT);
+  pinMode(ledAzul, OUTPUT);
+  pinMode(ledAmarillo, OUTPUT);
+  pinMode(ledRojo, OUTPUT);
   pinMode(buzzer, OUTPUT);
   Serial.begin(9600);
 }
@@ -573,8 +578,8 @@ void loop() {
   lectura = analogRead(sensor);              // lee el sensor (0 a 1023)
 
   // map convierte la lectura en un porcentaje de 0 a 100.
-  // 0 = sensor seco, 876 = sensor sumergido (ajusta estos valores al calibrar)
-  nivel = map(lectura, 0, 876, 0, 100);
+  // valorSeco = sensor seco (0 %), valorAgua = sensor sumergido (100 %)
+  nivel = map(lectura, valorSeco, valorAgua, 0, 100);
   nivel = constrain(nivel, 0, 100);
 
   Serial.print("Lectura: ");
@@ -584,16 +589,20 @@ void loop() {
   Serial.println(" %");
 
   // Primero se apagan todos los LED
-  digitalWrite(ledRojo, LOW);
-  digitalWrite(ledAmarillo, LOW);
   digitalWrite(ledVerde, LOW);
+  digitalWrite(ledAzul, LOW);
+  digitalWrite(ledAmarillo, LOW);
+  digitalWrite(ledRojo, LOW);
 
-  // Luego se enciende lo que corresponde al nivel del agua
+  // Luego se van encendiendo a medida que el nivel sube (quedan prendidos los anteriores)
   if (nivel >= 10) {
-    digitalWrite(ledVerde, HIGH);       // verde: hay agua y el nivel es normal
+    digitalWrite(ledVerde, HIGH);       // verde: hay agua
   }
-  if (nivel > 50) {
-    digitalWrite(ledAmarillo, HIGH);    // amarillo: ya pasó de la mitad del sensor
+  if (nivel >= 35) {
+    digitalWrite(ledAzul, HIGH);        // azul: el nivel va subiendo
+  }
+  if (nivel >= 60) {
+    digitalWrite(ledAmarillo, HIGH);    // amarillo: ya pasó de la mitad
   }
   if (nivel >= 85) {
     digitalWrite(ledRojo, HIGH);        // rojo: el agua se va a llenar
