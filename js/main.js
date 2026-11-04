@@ -332,6 +332,14 @@
     }
   }, true);
 
+  // Ruta de aprendizaje: cada tarjeta se despliega al tocar "Ver más"
+  $$('.pstep__toggle').forEach((btn) => btn.addEventListener('click', () => {
+    const tarjeta = btn.closest('.pstep');
+    const abierta = tarjeta.classList.toggle('is-open');
+    btn.setAttribute('aria-expanded', String(abierta));
+    $('.pstep__more', tarjeta).hidden = !abierta;
+    btn.firstChild.textContent = abierta ? 'Ver menos ' : 'Ver más ';
+  }));
   // Fotos de las sesiones: img/sesiones/<nombre>.jpg (con el mismo respaldo de extensiones)
   $$('[data-foto]').forEach((fig) => {
     const base = fig.dataset.foto;
@@ -666,8 +674,14 @@
     item.className = `gallery__item ${foto.alto || 'corta'}`;
     item.dataset.cat = foto.categoria;
     item.tabIndex = 0;
-    item.innerHTML = `<img src="${foto.src}" alt="${foto.alt}" loading="lazy">`;
-    item.addEventListener('click', () => abrirModal(foto.alt, `<img src="${foto.src}" alt="${foto.alt}">`));
+    // Con "foto" se busca img/galeria/<foto>.jpg (y .jpeg, .png, .webp); con "src" se usa la ruta tal cual
+    const base = foto.foto ? `img/galeria/${foto.foto}` : '';
+    const ruta = base ? `${base}.jpg` : foto.src;
+    item.innerHTML = `<img src="${ruta}" ${base ? `data-base="${base}" data-try="0"` : ''} alt="${foto.alt}" loading="lazy">`;
+    item.addEventListener('click', () => {
+      const im = $('img', item);
+      abrirModal(foto.alt, `<img src="${im.currentSrc || im.src}" alt="${foto.alt}">`);
+    });
     item.addEventListener('keydown', (e) => { if (e.key === 'Enter') item.click(); });
     gallery.appendChild(item);
   });

@@ -35,8 +35,8 @@ Fortalecer la lógica de programación mediante el diseño de prototipos con Ard
 | 2 | 28 y 29 de septiembre | Entradas y salidas digitales: `pinMode`, `digitalWrite`, `digitalRead` |
 | 3 | 13 y 16 de octubre | Condicionales y ciclos: `if / else` y `for` |
 | 4 | Semana del 19 al 23 de octubre | Entradas analógicas y la función `map()` |
-| 5 | Semana del 27 al 31 de octubre | Del diagrama al prototipo: montaje con servomotor y sensor ultrasónico, y lectura de diagramas de conexiones |
-| 6 | Por realizar | — |
+| 5 | 26 y 30 de octubre | Del diagrama al prototipo: montaje con servomotor y sensor ultrasónico, y lectura de diagramas de conexiones |
+| 6 | 9 de noviembre | Verificación y cierre del prototipo: depuración, demostración, rúbrica y post-test |
 
 ## Prototipos
 

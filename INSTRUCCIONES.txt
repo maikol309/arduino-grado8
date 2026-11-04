@@ -79,10 +79,11 @@ Cuando se realice la sesion 6, se agregan sus fichas en index.html
 (seccion "Sesion a sesion", busca "Proximamente").
 
 
-5. GALERIA
-----------
-Al final de js/proyectos.js esta la lista GALERIA. Copia una linea y cambia la ruta,
-el texto alternativo y la categoria (diagnostico, tinkercad, arduino o prototipos).
+5. GALERIA DEL PROCESO
+----------------------
+Cuatro fotos por etapa, guardadas en img/galeria/ con estos nombres (.jpg, .jpeg, .png o .webp):
+  diagnostico-1 a diagnostico-4, tinkercad-1 a tinkercad-4, arduino-1 a arduino-4, prototipos-1 a prototipos-4.
+La descripcion de cada foto se edita en la lista GALERIA de js/proyectos.js (campo alt).
 
 
 6. PROBAR LA PAGINA EN EL COMPUTADOR

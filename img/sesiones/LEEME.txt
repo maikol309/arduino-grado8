@@ -6,6 +6,7 @@ Fotos de las sesiones (la extension puede ser .jpg, .jpeg, .png o .webp):
   sesion-3.jpg      foto de la sesion 3
   sesion-4.jpg      foto de la sesion 4
   sesion-5.jpg      foto de la sesion 5
+  sesion-6.jpg      foto de la sesion 6 (9 de noviembre)
 
 Mientras no haya foto, la pagina muestra una imagen de relleno.
 Cuando se realice la sesion 6 se agregan sus fichas en index.html (seccion "Sesion a sesion").

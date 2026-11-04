@@ -1162,24 +1162,36 @@ void loop() {
 ];
 
 /* ============================================================
-   GALERÍA
+   GALERÍA DEL PROCESO
    ------------------------------------------------------------
-   categoria: diagnostico | tinkercad | arduino | prototipos
-   Reemplaza "src" por la ruta de tus fotos, por ejemplo:
-   { src: "img/galeria/foto01.jpg", alt: "...", categoria: "arduino" }
+   Cuatro fotos por etapa. Guárdalas en img/galeria/ con estos nombres
+   (sirve .jpg, .jpeg, .png o .webp):
+
+     diagnostico-1 ... diagnostico-4   prueba diagnóstica
+     tinkercad-1   ... tinkercad-4     simulaciones en Tinkercad
+     arduino-1     ... arduino-4       montaje con Arduino
+     prototipos-1  ... prototipos-4    prototipos terminados
+
+   El texto "alt" es la descripción que aparece al ampliar la foto:
+   cámbialo por lo que realmente se ve. "alto" (alta o corta) solo
+   cambia la forma del recuadro en el mosaico.
    ============================================================ */
 
 const GALERIA = [
-  { src: "img/placeholder.svg", alt: "Aplicación de la prueba diagnóstica en el aula", categoria: "diagnostico", alto: "corta" },
-  { src: "img/placeholder.svg", alt: "Estudiantes resolviendo el cuestionario inicial", categoria: "diagnostico", alto: "alta" },
-  { src: "img/placeholder.svg", alt: "Primer circuito simulado en Tinkercad", categoria: "tinkercad", alto: "alta" },
-  { src: "img/placeholder.svg", alt: "Simulación de un semáforo con condicionales", categoria: "tinkercad", alto: "corta" },
-  { src: "img/placeholder.svg", alt: "Explicación de variables en el tablero", categoria: "tinkercad", alto: "corta" },
-  { src: "img/placeholder.svg", alt: "Montaje de un LED sobre protoboard", categoria: "arduino", alto: "alta" },
-  { src: "img/placeholder.svg", alt: "Carga del primer programa a la placa Arduino UNO", categoria: "arduino", alto: "corta" },
-  { src: "img/placeholder.svg", alt: "Revisión del cableado de un sensor ultrasónico", categoria: "arduino", alto: "alta" },
-  { src: "img/placeholder.svg", alt: "Prototipo de la caneca automática terminado", categoria: "prototipos", alto: "corta" },
-  { src: "img/placeholder.svg", alt: "Sustentación del letrero LED ante el curso", categoria: "prototipos", alto: "alta" },
-  { src: "img/placeholder.svg", alt: "Prueba del medidor de humedad en la matera", categoria: "prototipos", alto: "corta" },
-  { src: "img/placeholder.svg", alt: "Grupo completo con los once prototipos", categoria: "prototipos", alto: "alta" }
+  { foto: "diagnostico-1", alt: "Prueba diagnóstica · foto 1", categoria: "diagnostico", alto: "alta" },
+  { foto: "diagnostico-2", alt: "Prueba diagnóstica · foto 2", categoria: "diagnostico", alto: "corta" },
+  { foto: "diagnostico-3", alt: "Prueba diagnóstica · foto 3", categoria: "diagnostico", alto: "corta" },
+  { foto: "diagnostico-4", alt: "Prueba diagnóstica · foto 4", categoria: "diagnostico", alto: "alta" },
+  { foto: "tinkercad-1", alt: "Simulación en Tinkercad · foto 1", categoria: "tinkercad", alto: "alta" },
+  { foto: "tinkercad-2", alt: "Simulación en Tinkercad · foto 2", categoria: "tinkercad", alto: "corta" },
+  { foto: "tinkercad-3", alt: "Simulación en Tinkercad · foto 3", categoria: "tinkercad", alto: "corta" },
+  { foto: "tinkercad-4", alt: "Simulación en Tinkercad · foto 4", categoria: "tinkercad", alto: "alta" },
+  { foto: "arduino-1", alt: "Montaje con Arduino · foto 1", categoria: "arduino", alto: "alta" },
+  { foto: "arduino-2", alt: "Montaje con Arduino · foto 2", categoria: "arduino", alto: "corta" },
+  { foto: "arduino-3", alt: "Montaje con Arduino · foto 3", categoria: "arduino", alto: "corta" },
+  { foto: "arduino-4", alt: "Montaje con Arduino · foto 4", categoria: "arduino", alto: "alta" },
+  { foto: "prototipos-1", alt: "Prototipos terminados · foto 1", categoria: "prototipos", alto: "alta" },
+  { foto: "prototipos-2", alt: "Prototipos terminados · foto 2", categoria: "prototipos", alto: "corta" },
+  { foto: "prototipos-3", alt: "Prototipos terminados · foto 3", categoria: "prototipos", alto: "corta" },
+  { foto: "prototipos-4", alt: "Prototipos terminados · foto 4", categoria: "prototipos", alto: "alta" }
 ];

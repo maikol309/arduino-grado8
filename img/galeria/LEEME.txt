@@ -1,0 +1,12 @@
+﻿Galeria del proceso: 4 fotos por etapa (16 en total)
+
+Guarda aqui las fotos con estos nombres (sirve .jpg, .jpeg, .png o .webp):
+
+  diagnostico-1  a  diagnostico-4    prueba diagnostica (31 de agosto)
+  tinkercad-1    a  tinkercad-4      simulaciones en Tinkercad (sesiones 1 a 4)
+  arduino-1      a  arduino-4        montaje con Arduino (sesion 5)
+  prototipos-1   a  prototipos-4     prototipos terminados (sesion 6)
+
+Mientras falte una foto, la pagina muestra una imagen de relleno.
+La descripcion de cada foto se edita en js/proyectos.js, en la lista GALERIA (campo "alt").
+Si prefieres mas o menos fotos de una etapa, agrega o quita lineas en esa lista.

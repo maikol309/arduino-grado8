@@ -212,54 +212,130 @@
         <div class="path__bar" role="img" aria-label="5 de 6 sesiones realizadas"><span style="--fill:83%"></span></div>
       </div>
 
-      <ol class="path__steps">
-        <li class="step step--done">
+            <p class="path__hint">Desliza hacia los lados y toca <b>Ver más</b> para desplegar cada sesión.</p>
+      <div class="prail" tabindex="0" aria-label="Ruta de aprendizaje, desplázala horizontalmente">
+        <ol class="prail__track">
+        <li class="pstep pstep--done">
           <span class="step__dot" aria-hidden="true">0</span>
           <p class="step__tag">Diagnóstico · 31 de agosto</p>
           <h4>Dónde estaba el vacío</h4>
-          <p>Una prueba inicial y la observación en clase mostraron que seguían instrucciones, pero no podían explicarlas.</p>
+          <p class="pstep__res">Una prueba inicial y la observación en clase mostraron que seguían instrucciones, pero no podían explicarlas.</p>
+          <button class="pstep__toggle" aria-expanded="false" aria-controls="ps0">Ver más <i aria-hidden="true">▾</i></button>
+          <div class="pstep__more" id="ps0" hidden>
+            <p class="pstep__obj"><b>Objetivo:</b> Conocer el punto de partida de los estudiantes antes de empezar las sesiones.</p>
+            <ul>
+              <li>Se aplicó el 31 de agosto, en una semana distinta a las demás sesiones.</li>
+              <li>Mostró que seguían instrucciones, pero no podían explicarlas.</li>
+            </ul>
+            <a class="pstep__link" href="https://docs.google.com/forms/d/e/1FAIpQLScefME0e0mEdFZwiklbKWRcEWe6PGe7zLJQdij8gf5UZUNhsg/viewform" target="_blank" rel="noopener noreferrer">Ver el diagnóstico ↗</a>
+          </div>
         </li>
-        <li class="step step--done">
+        <li class="pstep pstep--done">
           <span class="step__dot" aria-hidden="true">1</span>
-          <p class="step__tag">Sesión 1</p>
+          <p class="step__tag">Sesión 1 · 4 h</p>
           <h4>Pensar antes de programar</h4>
-          <p>Algoritmos, diagramas de flujo y la primera variable: el tiempo que controla un LED.</p>
+          <p class="pstep__res">Algoritmos, diagramas de flujo y la primera variable: el tiempo que controla un LED.</p>
           <code class="step__code">int tiempo = 1000;</code>
+          <button class="pstep__toggle" aria-expanded="false" aria-controls="ps1">Ver más <i aria-hidden="true">▾</i></button>
+          <div class="pstep__more" id="ps1" hidden>
+            <p class="pstep__obj"><b>Objetivo:</b> Comprender algoritmos, diagramas de flujo y variables.</p>
+            <ul>
+              <li>Actividad: Mi primer circuito y variable en Tinkercad.</li>
+              <li>Una variable es una caja etiquetada que guarda un valor; al cambiar el tiempo, cambia el parpadeo.</li>
+              <li>Reto: Semáforo de Emergencia con un segundo LED.</li>
+            </ul>
+            <a class="pstep__link" href="https://maikol309.github.io/proyecto-aula-8/#/sesion-1" target="_blank" rel="noopener noreferrer">Ver la sesión completa ↗</a>
+          </div>
         </li>
-        <li class="step step--done">
+        <li class="pstep pstep--done">
           <span class="step__dot" aria-hidden="true">2</span>
-          <p class="step__tag">Sesión 2</p>
+          <p class="step__tag">Sesión 2 · 4 h</p>
           <h4>Escuchar y responder</h4>
-          <p>Arduino lee un pulsador y responde con un LED, cada par de forma independiente.</p>
+          <p class="pstep__res">Arduino lee un pulsador y responde con un LED, cada par de forma independiente.</p>
           <code class="step__code">digitalRead(pulsador);</code>
+          <button class="pstep__toggle" aria-expanded="false" aria-controls="ps2">Ver más <i aria-hidden="true">▾</i></button>
+          <div class="pstep__more" id="ps2" hidden>
+            <p class="pstep__obj"><b>Objetivo:</b> Usar pinMode, digitalWrite y digitalRead.</p>
+            <ul>
+              <li>Actividad: dos LED y dos pulsadores que trabajan de forma independiente.</li>
+              <li>Entrada digital (algo que Arduino lee) frente a salida digital (algo que controla).</li>
+              <li>Reto: un tercer par LED-pulsador con el nombre de tu proyecto.</li>
+            </ul>
+            <a class="pstep__link" href="https://maikol309.github.io/proyecto-aula-8/#/sesion-2" target="_blank" rel="noopener noreferrer">Ver la sesión completa ↗</a>
+          </div>
         </li>
-        <li class="step step--done">
+        <li class="pstep pstep--done">
           <span class="step__dot" aria-hidden="true">3</span>
-          <p class="step__tag">Sesión 3</p>
+          <p class="step__tag">Sesión 3 · 2 h + 3 h de refuerzo</p>
           <h4>Decidir y repetir</h4>
-          <p>if / else y ciclos for para automatizar una secuencia de seis LED.</p>
+          <p class="pstep__res">if / else y ciclos for para automatizar una secuencia de seis LED.</p>
           <code class="step__code">for (int i = 2; i &lt;= 7; i++)</code>
+          <button class="pstep__toggle" aria-expanded="false" aria-controls="ps3">Ver más <i aria-hidden="true">▾</i></button>
+          <div class="pstep__more" id="ps3" hidden>
+            <p class="pstep__obj"><b>Objetivo:</b> Un ciclo for de ida y uno de vuelta, con 6 LED.</p>
+            <ul>
+              <li>El if / else decide entre dos caminos; el for repite un bloque varias veces.</li>
+              <li>Las tres partes del for: inicialización, condición e incremento.</li>
+              <li>Reto: cambiar el patrón de la secuencia.</li>
+            </ul>
+            <a class="pstep__link" href="https://maikol309.github.io/proyecto-aula-8/#/sesion-3" target="_blank" rel="noopener noreferrer">Ver la sesión completa ↗</a>
+          </div>
         </li>
-        <li class="step step--done">
+        <li class="pstep pstep--done">
           <span class="step__dot" aria-hidden="true">4</span>
-          <p class="step__tag">Sesión 4</p>
+          <p class="step__tag">Sesión 4 · 3 h</p>
           <h4>Señales que cambian poco a poco</h4>
-          <p>Un potenciómetro y map() convierten valores de 0 a 1023 en una cortina de 12 LED.</p>
+          <p class="pstep__res">Un potenciómetro y map() convierten valores de 0 a 1023 en una cortina de 12 LED.</p>
           <code class="step__code">map(analogRead(A0), 0, 1023, 0, 6)</code>
+          <button class="pstep__toggle" aria-expanded="false" aria-controls="ps4">Ver más <i aria-hidden="true">▾</i></button>
+          <div class="pstep__more" id="ps4" hidden>
+            <p class="pstep__obj"><b>Objetivo:</b> Usar analogRead y analogWrite en tu prototipo.</p>
+            <ul>
+              <li>analogRead entrega un número de 0 a 1023; map() lo traduce a otro rango.</li>
+              <li>El Monitor Serie muestra los valores que lee el sensor.</li>
+              <li>Reto: La Cortina Invertida.</li>
+            </ul>
+            <a class="pstep__link" href="https://maikol309.github.io/proyecto-aula-8/#/sesion-4" target="_blank" rel="noopener noreferrer">Ver la sesión completa ↗</a>
+          </div>
         </li>
-        <li class="step step--done">
+        <li class="pstep pstep--done">
           <span class="step__dot" aria-hidden="true">5</span>
-          <p class="step__tag">Sesión 5</p>
+          <p class="step__tag">Sesión 5 · 26 y 30 de octubre · 4 h</p>
           <h4>Del diagrama al prototipo</h4>
-          <p>Armamos los componentes siguiendo el diagrama: servomotor, sensor ultrasónico y cómo pasar cada pin a una variable.</p>
+          <p class="pstep__res">Armamos los componentes siguiendo el diagrama: servomotor, sensor ultrasónico y cómo pasar cada pin a una variable.</p>
           <code class="step__code">miServo.attach(pinServo);</code>
+          <button class="pstep__toggle" aria-expanded="false" aria-controls="ps5">Ver más <i aria-hidden="true">▾</i></button>
+          <div class="pstep__more" id="ps5" hidden>
+            <p class="pstep__obj"><b>Objetivo:</b> Montar un prototipo a partir de un diagrama de conexiones, reconociendo entradas y salidas.</p>
+            <ul>
+              <li>Servomotor (salida) y sensor ultrasónico (entrada).</li>
+              <li>Cómo leer un diagrama: alimentación, entradas y por último salidas.</li>
+              <li>Tabla de pines: componente, pin y nombre de la variable.</li>
+              <li>Tarea para la casa: avanzar en el código del proyecto.</li>
+            </ul>
+            <a class="pstep__link" href="https://maikol309.github.io/proyecto-aula-8/#/sesion-5" target="_blank" rel="noopener noreferrer">Ver la sesión completa ↗</a>
+          </div>
         </li>
-        <li class="step step--pending">
+        <li class="pstep pstep--pending">
           <span class="step__dot" aria-hidden="true">6</span>
-          <p class="step__tag">Sesión 6</p>
-          <h4>Próximamente</h4>
+          <p class="step__tag">Sesión 6 · 9 de noviembre · 2 h</p>
+          <h4>Verificación y cierre del prototipo</h4>
+          <p class="pstep__res">Depuración, demostración de cada prototipo, rúbrica y post-test final.</p>
+          <code class="step__code">Serial.println(valor);</code>
+          <span class="pstep__state">Programada</span>
+          <button class="pstep__toggle" aria-expanded="false" aria-controls="ps6">Ver más <i aria-hidden="true">▾</i></button>
+          <div class="pstep__more" id="ps6" hidden>
+            <p class="pstep__obj"><b>Objetivo:</b> Verificar, depurar y explicar tu prototipo.</p>
+            <ul>
+              <li>Depuración en cuatro pasos: alimentación, pines y variables, pinMode() y lógica.</li>
+              <li>Cada grupo hace la demostración y responde una pregunta sobre su código.</li>
+              <li>Valoración con la rúbrica y post-test individual.</li>
+            </ul>
+            <a class="pstep__link" href="https://maikol309.github.io/proyecto-aula-8/#/sesion-6" target="_blank" rel="noopener noreferrer">Ver la sesión completa ↗</a>
+          </div>
         </li>
-      </ol>
+        </ol>
+      </div>
     </div>
   </div>
 </section>
@@ -299,8 +375,9 @@
       <article class="week week--done">
         <p class="week__num">Diagnóstico · 31 de agosto de 2026</p>
         <h3>Prueba diagnóstica</h3>
-        <figure class="week__img" data-foto="img/sesiones/diagnostico" data-alt="Aplicación de la prueba diagnóstica"></figure>
+        <figure class="week__img week__img--alta" data-foto="img/sesiones/diagnostico" data-alt="Aplicación de la prueba diagnóstica"></figure>
         <p>Se aplicó en una semana distinta a las demás, antes de comenzar las sesiones.</p>
+        <a class="week__link" href="https://docs.google.com/forms/d/e/1FAIpQLScefME0e0mEdFZwiklbKWRcEWe6PGe7zLJQdij8gf5UZUNhsg/viewform" target="_blank" rel="noopener noreferrer">Ver el diagnóstico ↗</a>
       </article>
 
       <article class="week week--done">
@@ -340,18 +417,22 @@
       </article>
 
       <article class="week week--done">
-        <p class="week__num">Sesión 5 · semana del 27 al 31 de octubre de 2026</p>
+        <p class="week__num">Sesión 5 · 26 y 30 de octubre de 2026</p>
         <h3>Del diagrama al prototipo</h3>
         <figure class="week__img" data-foto="img/sesiones/sesion-5" data-alt="Estudiantes en la sesión 5"></figure>
         <p>Montaje de entradas y salidas con Arduino: servomotor, sensor ultrasónico y lectura de diagramas de conexiones.</p>
-        <ul class="week__chips"><li>2 horas</li><li>Grupos de proyecto</li></ul>
+        <ul class="week__chips"><li>4 horas</li><li>Grupos de proyecto</li></ul>
         <a class="week__link" href="https://maikol309.github.io/proyecto-aula-8/#/sesion-5" target="_blank" rel="noopener noreferrer">Ver guía y presentación ↗</a>
       </article>
 
       <article class="week week--pending">
-        <p class="week__num">Sesión 6</p>
-        <h3>Próximamente</h3>
-        <span class="week__state">Por realizar</span>
+        <p class="week__num">Sesión 6 · 9 de noviembre de 2026</p>
+        <h3>Verificación y cierre del prototipo</h3>
+        <figure class="week__img" data-foto="img/sesiones/sesion-6" data-alt="Estudiantes en la sesión 6"></figure>
+        <p>Depuración, demostración de cada prototipo con una pregunta oral sobre el código, valoración con la rúbrica y post-test final.</p>
+        <ul class="week__chips"><li>2 horas</li><li>Grupos de proyecto</li></ul>
+        <span class="week__state">Programada</span>
+        <a class="week__link" href="https://maikol309.github.io/proyecto-aula-8/#/sesion-6" target="_blank" rel="noopener noreferrer">Ver guía y presentación ↗</a>
       </article>
 
     </div>
