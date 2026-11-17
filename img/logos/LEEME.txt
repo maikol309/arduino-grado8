@@ -1,0 +1,8 @@
+Logos del pie de pagina
+
+  uptc.svg                       logo de la UPTC (ya esta)
+  licenciatura-informatica.svg   logo de la Licenciatura en Informatica (ya esta)
+  colegio.png                    logo o escudo del colegio (FALTA: guardalo con este nombre)
+
+Si un logo no esta, la pagina simplemente no lo muestra.
+Se ven sobre una ficha blanca, asi que sirve un PNG con fondo blanco o transparente.

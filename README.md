@@ -59,7 +59,7 @@ Cada prototipo muestra su portada, materiales, integrantes, diagrama de conexion
 ## Características del sitio
 
 - Placa Arduino UNO en 3D que gira y sigue el cursor, con una versión en CSS mientras carga el modelo.
-- Prototipos en cajas desplegables, con una sola abierta a la vez (se cierran con la **X** o con **Esc**).
+- Prototipos en cajas desplegables, cada una con una animación de su prototipo y una sola abierta a la vez (se cierran con la **X** o con **Esc** y la página vuelve al punto donde se abrió).
 - Línea de tiempo de las sesiones y ruta de aprendizaje con fragmentos de código.
 - Código resaltado con la paleta One Dark (modo oscuro) y One Light (modo claro), con botón para copiar.
 - Galería filtrable por etapa y modo claro / oscuro.

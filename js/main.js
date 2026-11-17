@@ -400,6 +400,7 @@
 
     crate.innerHTML = `
       <button class="crate__lid" aria-expanded="false" aria-controls="detalle-${p.id}">
+        ${typeof ANIMACIONES !== 'undefined' && ANIMACIONES[p.id] ? `<span class="crate__anim" aria-hidden="true">${ANIMACIONES[p.id]}</span>` : ''}
         <span class="crate__n">Prototipo ${num} · ${p.categoria}</span>
         <h3 class="crate__name">${p.nombre}</h3>
         <p class="crate__lema">${p.lema}</p>
@@ -566,13 +567,23 @@
     });
   }
 
+  // Al cerrar, la página vuelve a dejar la caja en el mismo punto de la pantalla donde se abrió
+  function cerrarYVolver(crate) {
+    cerrarCajas();
+    const tapa = $('.crate__lid', crate);
+    const yAntes = Number(crate.dataset.y);
+    if (!Number.isNaN(yAntes) && crate.dataset.y !== undefined) {
+      const ahora = crate.getBoundingClientRect().top;
+      window.scrollTo({ top: window.scrollY + ahora - yAntes, behavior: 'instant' });   // sin deslizar: la caja queda quieta
+    }
+    tapa.focus({ preventScroll: true });
+  }
+
   shelf.addEventListener('click', (e) => {
     // Botón X: cierra la caja y devuelve el foco a su tapa
     const cerrar = e.target.closest('.detail__close');
     if (cerrar) {
-      const tapaCerrada = $('.crate__lid', cerrar.closest('.crate'));
-      cerrarCajas();
-      tapaCerrada.focus();
+      cerrarYVolver(cerrar.closest('.crate'));
       return;
     }
 
@@ -581,10 +592,13 @@
     const crate = tapa.closest('.crate');
     const abierta = crate.classList.contains('is-open');
 
+    if (abierta) { cerrarYVolver(crate); return; }
+
     // Solo una caja abierta a la vez
     cerrarCajas();
 
     if (!abierta) {
+      crate.dataset.y = crate.getBoundingClientRect().top;   // dónde estaba la caja en la pantalla
       crate.classList.add('is-open', 'is-in');   // is-in: la caja abierta es muy alta y no se activaría sola
       tapa.setAttribute('aria-expanded', 'true');
       setTimeout(() => {
@@ -652,10 +666,7 @@
     if (e.key !== 'Escape') return;
     if (!modal.hidden) { cerrarModal(); return; }
     const abierta = $('.crate.is-open', shelf);
-    if (abierta) {
-      cerrarCajas();
-      $('.crate__lid', abierta).focus();
-    }
+    if (abierta) cerrarYVolver(abierta);
   });
 
   document.addEventListener('click', (e) => {
