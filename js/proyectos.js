@@ -259,6 +259,115 @@ void loop()
   },
 
   {
+    id: "caseta-peaje",
+    nombre: "Caseta de peaje",
+    lema: "La barrera sube solo cuando llega un carro",
+    categoria: "Sensor y servomotor",
+    descripcion:
+      "Una maqueta de caseta de peaje hecha con palos de helado. El sensor ultrasónico mide la distancia al carro: cuando llega a 20 cm o menos, la barrera movida por el servomotor sube, se enciende el LED rojo y suena el buzzer; cuando no hay carro, la barrera baja y queda encendido el LED verde. La distancia se muestra en el Monitor Serie.",
+    integrantes: ["Julieth Mariana Suica López", "Deisy Carolina Silva Sanabria", "Yulieth Valeria Plazas Sanabria", "Sara Daniela Caro González"],
+    componentes: ["Arduino UNO", "Sensor ultrasónico HC-SR04", "Servomotor (barrera)", "LED rojo y LED verde con resistencias", "Buzzer", "Protoboard y cables jumper", "Caseta de palos de helado"],
+    ext: "jpeg",
+    video: "videos/caseta-peaje.mp4",
+    videoTexto: "Así funciona: cuando el carro se acerca a 20 cm o menos, la barrera sube, se enciende el LED rojo y suena el buzzer.",
+    diagramaTexto:
+      "El servomotor de la barrera recibe su señal por el pin 10. El sensor HC-SR04 envía una sola señal por el pin 9 (sus terminales TRIG y ECHO aparecen unidos). El LED rojo está en el pin 5 y el verde en el pin 7, cada uno con su resistencia. Sensor, servomotor y LED toman su alimentación de los rieles de la protoboard. En el código final los pines cambiaron: TRIG en el 8, ECHO en el 7, servomotor en el 9, LED verde en el 2, LED rojo en el 3 y buzzer en el 4.",
+    evidencias: [
+      { titulo: "Trabajo en equipo", texto: "Varias manos arman el circuito: sensor ultrasónico, protoboard, Arduino y servomotor sobre la mesa." },
+      { titulo: "Primeras conexiones", texto: "Se conectan los cables en la protoboard; abajo se ven el sensor y el servomotor." },
+      { titulo: "Sensor y servomotor", texto: "El sensor ultrasónico y el servomotor ya conectados a la protoboard y al Arduino." },
+      { titulo: "Acomodando los componentes", texto: "Se acomodan el sensor ultrasónico y el servomotor junto al circuito." },
+      { titulo: "Conectando los LED", texto: "Se conectan cables cerca de los LED rojo y verde de la protoboard." },
+      { titulo: "Circuito en marcha", texto: "La protoboard con los LED, el sensor y el Arduino unidos por cables de colores." },
+      { titulo: "Colocando los LED", texto: "Se colocan los LED verde y rojo en la protoboard." },
+      { titulo: "LED y resistencias", texto: "Los LED verde y rojo con sus resistencias, vistos de cerca." },
+      { titulo: "Revisando el Arduino", texto: "Un estudiante revisa las conexiones del Arduino; a la izquierda se ven los LED." },
+      { titulo: "Cables al Arduino", texto: "Se conectan cables a los pines del Arduino UNO." },
+      { titulo: "Más conexiones", texto: "Se inserta un cable en el Arduino; arriba se ven los LED en la protoboard." },
+      { titulo: "Ajustando conexiones", texto: "Una estudiante ajusta los cables del circuito con ayuda de sus compañeros." },
+      { titulo: "Revisión del montaje", texto: "Una estudiante revisa el montaje; al lado se ve el servomotor." },
+      { titulo: "La caseta y el circuito", texto: "La caseta de palos de helado junto al circuito: protoboard, sensor, LED, Arduino y servomotor." },
+      { titulo: "Montaje final", texto: "Dos estudiantes instalan los componentes en la caseta." }
+    ],
+    codigo: `// Proyecto -> Caseta de peaje
+#include <Servo.h>              // librería para controlar el servomotor de la barrera
+
+// -------------------------
+// PINES
+// -------------------------
+const int TRIG = 8;             // pin que envía el pulso del sensor ultrasónico
+const int ECHO = 7;             // pin que recibe el eco del sensor
+const int SERVO_PIN = 9;        // señal del servomotor (la barrera)
+const int LED_VERDE = 2;        // LED verde: no hay carro
+const int LED_ROJO = 3;         // LED rojo: hay un carro en la caseta
+const int BUZZER = 4;           // buzzer: suena cuando llega un carro
+
+Servo servo;                    // objeto que controla la barrera
+
+
+// =========================
+// MEDIR DISTANCIA
+// =========================
+long distancia() {
+  digitalWrite(TRIG, LOW);      // apaga la señal del sensor
+  delayMicroseconds(2);
+
+  digitalWrite(TRIG, HIGH);     // envía el pulso ultrasónico
+  delayMicroseconds(10);
+  digitalWrite(TRIG, LOW);
+
+  long t = pulseIn(ECHO, HIGH, 30000);   // tiempo que tarda en volver el eco (máximo 30 ms)
+
+  if (t == 0) {                 // si no vuelve el eco, no hay nada cerca
+    return 999;
+  }
+  return t * 0.0343 / 2;        // convierte el tiempo en centímetros
+}
+
+
+// =========================
+// CONFIGURACIÓN INICIAL
+// =========================
+void setup() {
+  pinMode(TRIG, OUTPUT);
+  pinMode(ECHO, INPUT);
+
+  pinMode(LED_VERDE, OUTPUT);
+  pinMode(LED_ROJO, OUTPUT);
+  pinMode(BUZZER, OUTPUT);
+
+  servo.attach(SERVO_PIN);      // conecta el servomotor al pin 9
+  servo.write(0);               // la barrera empieza abajo
+
+  Serial.begin(9600);           // abre el Monitor Serie
+}
+
+
+// =========================
+// PROGRAMA PRINCIPAL
+// =========================
+void loop() {
+  long d = distancia();         // mide la distancia al carro
+  Serial.println(d);            // la muestra en el Monitor Serie
+
+  if (d <= 20) {                // hay un carro a 20 cm o menos
+    digitalWrite(LED_VERDE, LOW);
+    digitalWrite(LED_ROJO, HIGH);   // se enciende el LED rojo
+    tone(BUZZER, 1000);             // suena el buzzer
+    servo.write(90);                // la barrera sube
+  }
+  else {                        // no hay carro cerca
+    digitalWrite(LED_VERDE, HIGH);  // se enciende el LED verde
+    digitalWrite(LED_ROJO, LOW);
+    noTone(BUZZER);                 // el buzzer se apaga
+    servo.write(0);                 // la barrera baja
+  }
+
+  delay(200);                   // espera 200 ms antes de volver a medir
+}`
+  },
+
+  {
     id: "medidor-humedad",
     nombre: "Medidor de humedad",
     lema: "La matera avisa cuando tiene sed",
@@ -714,68 +823,6 @@ void loop() {
   matriz.setLed(0, fila, columna, true);
 
   delay(80);   // sin esta pausa el punto viaja demasiado rapido
-}`
-  },
-
-  {
-    id: "caseta-peaje",
-    nombre: "Caseta de peaje",
-    lema: "La barrera sube solo cuando llega un carro",
-    categoria: "Sensor y servomotor",
-    descripcion:
-      "Una maqueta de caseta de peaje con una barrera accionada por servomotor. Un sensor ultrasónico detecta el vehículo, la barrera se levanta unos segundos y vuelve a bajar; un semáforo de dos LED indica si se puede pasar.",
-    integrantes: ["Julieth Mariana Suica López", "Deisy Carolina Silva Sanabria", "Yulieth Valeria Plazas Sanabria", "Sara Daniela Caro González"],
-    componentes: ["Arduino UNO", "Sensor ultrasónico HC-SR04", "Servomotor", "LED rojo y verde con resistencias", "Protoboard", "Maqueta de la caseta"],
-    diagramaTexto:
-      "El servomotor de la barrera recibe su señal por el pin 10. El sensor HC-SR04 envía una sola señal por el pin 9 (sus terminales TRIG y ECHO aparecen unidos). El LED rojo está en el pin 5 y el verde en el pin 7, cada uno con su resistencia. Sensor, servomotor y LED toman su alimentación de los rieles de la protoboard.",
-    evidencias: [
-      { titulo: "Maqueta de la caseta", texto: "Armamos la carretera, la caseta y la barrera con el servomotor." },
-      { titulo: "Detección del vehículo", texto: "Probamos a qué distancia el sensor reconoce el carro de juguete." },
-      { titulo: "Barrera y semáforo", texto: "La barrera sube, el LED verde se enciende y todo vuelve a su lugar cuando pasa el carro." }
-    ],
-    codigo: `#include <Servo.h>
-
-int TRIG = 9;
-int ECHO = 8;
-int LED_ROJO = 4;
-int LED_VERDE = 5;
-int DISTANCIA_CARRO = 10;   // centimetros
-
-Servo barrera;
-
-void setup() {
-  pinMode(TRIG, OUTPUT);
-  pinMode(ECHO, INPUT);
-  pinMode(LED_ROJO, OUTPUT);
-  pinMode(LED_VERDE, OUTPUT);
-  barrera.attach(6);
-  barrera.write(0);                 // barrera abajo
-  digitalWrite(LED_ROJO, HIGH);
-}
-
-int medirDistancia() {
-  digitalWrite(TRIG, LOW);
-  delayMicroseconds(2);
-  digitalWrite(TRIG, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIG, LOW);
-  return pulseIn(ECHO, HIGH) * 0.034 / 2;
-}
-
-void loop() {
-  int distancia = medirDistancia();
-
-  if (distancia > 0 && distancia < DISTANCIA_CARRO) {
-    digitalWrite(LED_ROJO, LOW);
-    digitalWrite(LED_VERDE, HIGH);
-    barrera.write(90);              // sube la barrera
-    delay(4000);                    // tiempo para que pase el carro
-    barrera.write(0);               // baja la barrera
-    digitalWrite(LED_VERDE, LOW);
-    digitalWrite(LED_ROJO, HIGH);
-  }
-
-  delay(100);
 }`
   },
 

@@ -1,13 +1,11 @@
 ﻿Carpeta del prototipo: caseta-peaje
 
-Pon aqui las fotos con estos nombres (la extension puede ser .jpg, .jpeg, .png o .webp):
+Fotos (extension .jpeg):
 
-  portada.jpg       foto del prototipo terminado
-  diagrama.png      diagrama de conexiones (Tinkercad o dibujo)
-  evidencia-1.jpg   foto del proceso 1
-  evidencia-2.jpg   foto del proceso 2
-  evidencia-3.jpg   foto del proceso 3
+  diagrama.jpeg       diagrama de conexiones
+  evidencia-1.jpeg    ... hasta evidencia-15.jpeg: proceso de armado, en orden
+  portada.jpeg        copia de evidencia-14 (la caseta junto al circuito); se puede cambiar
 
-El texto que acompana cada evidencia se escribe en js/proyectos.js (campo "evidencias").
-Si agregas mas fotos (evidencia-4.jpg...), agrega tambien su texto en esa lista.
-Mientras no haya foto, la pagina muestra una imagen de relleno.
+Con 10 fotos o mas la pagina usa el visor grande con flechas y miniaturas.
+Video: videos/caseta-peaje.mp4 (aparece antes del diagrama y de las evidencias).
+Las fotos que no se usaron se apartaron en la carpeta fotos-sin-usar, fuera del sitio.

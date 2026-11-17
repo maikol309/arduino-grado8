@@ -44,12 +44,12 @@ Fortalecer la lógica de programación mediante el diseño de prototipos con Ard
 |---|---|---|
 | 1 | Caneca basura automática | Sensor ultrasónico |
 | 2 | Puerta automática pública | Control de acceso |
-| 3 | Medidor de humedad | Sensor de suelo |
-| 4 | Letrero led con Arduino | Matriz de LED |
-| 5 | Medidor de agua con Arduino | Sensor de nivel |
-| 6 | Alarma con detector de movimiento | Sensor de movimiento |
-| 7 | Matriz joystick | Entrada analógica |
-| 8 | Caseta de peaje | Sensor y servomotor |
+| 3 | Caseta de peaje | Sensor y servomotor |
+| 4 | Medidor de humedad | Sensor de suelo |
+| 5 | Letrero led con Arduino | Matriz de LED |
+| 6 | Medidor de agua con Arduino | Sensor de nivel |
+| 7 | Alarma con detector de movimiento | Sensor de movimiento |
+| 8 | Matriz joystick | Entrada analógica |
 | 9 | Sonar con Arduino y sensor ultrasónico | Sensor ultrasónico |
 | 10 | Ruleta | Aleatoriedad |
 | 11 | Brazo robótico | Servomotores |
