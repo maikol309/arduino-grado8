@@ -375,13 +375,22 @@ void loop() {
     descripcion:
       "Un sensor capacitivo enterrado en la matera mide la humedad del suelo y la muestra en porcentaje en una pantalla LCD. Un semáforo de LED y un buzzer indican si el suelo está seco, en estado óptimo o húmedo. Con los valores de lectura en seco y en agua, el programa convierte la señal del sensor en un porcentaje.",
     integrantes: ["Laura Fernanda Vargas Arias", "Sara Valentina Barreto Galindo"],
-    componentes: ["Arduino UNO", "Sensor de humedad de suelo capacitivo", "Pantalla LCD 16x2 con módulo I2C", "3 LED (verde, amarillo y rojo)", "Buzzer", "Protoboard", "Matera de prueba"],
+    componentes: ["Arduino Nano y cable USB", "Sensor de humedad de suelo capacitivo v1.2", "Pantalla LCD 16x2 con módulo I2C", "3 LED (verde, amarillo y rojo) con resistencias", "Buzzer", "Protoboard y cables jumper", "Matera de prueba"],
+    ext: "jpeg",
+    portadaForma: "1 / 1",
+    portadaPos: "center bottom",
     diagramaTexto:
       "Tres LED van a los pines digitales 12 (rojo), 10 (amarillo) y 9 (verde) y comparten una resistencia en la protoboard. El sensor de humedad de suelo se conecta con su VCC al pin A0, su señal (SIG) al pin A1 y su GND al GND del Arduino.",
     evidencias: [
-      { titulo: "Calibración", texto: "Medimos el sensor en tierra seca y en tierra mojada para encontrar los valores de referencia." },
-      { titulo: "Semáforo de humedad", texto: "Los LED indican si la matera está seca, con buena humedad o demasiado húmeda." },
-      { titulo: "Prueba en la matera", texto: "Enterramos el sensor y comprobamos que el buzzer avisa cuando hace falta regar." }
+      { titulo: "Los materiales", texto: "Pantalla LCD con su módulo I2C, sensor de humedad capacitivo, Arduino Nano, LED, resistencias, buzzer, protoboard, cables y cable USB." },
+      { titulo: "Empezando el montaje", texto: "Con la protoboard todavía vacía, la estudiante empieza a ubicar los componentes; arriba ya están la pantalla y el buzzer." },
+      { titulo: "El semáforo de LED", texto: "Se colocan en la protoboard los LED verde, amarillo y rojo, que indicarán si el suelo está húmedo, en estado óptimo o seco." },
+      { titulo: "LED y resistencias", texto: "Cada LED lleva su resistencia; se conectan los cables que irán hacia el Arduino." },
+      { titulo: "Colocando el Arduino Nano", texto: "El Arduino Nano se inserta en la protoboard, junto a los LED y el buzzer." },
+      { titulo: "El sensor de humedad", texto: "El sensor capacitivo de humedad de suelo con su conector de tres cables: alimentación, tierra y señal." },
+      { titulo: "Conectando el sensor", texto: "Se unen los cables del sensor a los jumpers que llegan al Arduino." },
+      { titulo: "Cable USB", texto: "Se conecta el cable USB al Arduino Nano para darle energía y cargar el programa." },
+      { titulo: "Conectando la pantalla", texto: "Se conectan los cables del módulo I2C de la pantalla LCD; el circuito queda completo." }
     ],
     codigo: `#include <Wire.h>
 #include <LiquidCrystal_I2C.h>
@@ -648,15 +657,24 @@ void loop() {
     lema: "Cuánta agua queda, en cuatro colores",
     categoria: "Sensor de nivel",
     descripcion:
-      "Un sensor mide el nivel del agua de un vaso y avisa con cuatro LED y un buzzer. A medida que el agua sube se van encendiendo en orden: verde (hay agua), azul (el nivel sube), amarillo (pasó de la mitad) y rojo (se va a llenar), y con el rojo suena el buzzer. El programa convierte la lectura del sensor en un porcentaje con map().",
+      "Un sensor de nivel de agua, metido en un vaso, mide cuánta agua hay y el Arduino la muestra con cuatro LED y un buzzer. A medida que el agua sube se van encendiendo en orden: verde (hay agua), azul (el nivel sube), amarillo (pasó de la mitad) y rojo (se va a llenar); con el rojo suena el buzzer para avisar. El programa convierte la lectura del sensor en un porcentaje con map() y lo muestra en el Monitor Serie.",
     integrantes: ["Rafael Armando Jiménez Arias", "Manolo Steven Boyacá Jiménez"],
-    componentes: ["Arduino UNO", "Sensor de humedad usado como sensor de nivel", "4 LED (verde, azul, amarillo y rojo)", "Buzzer", "Protoboard", "Vaso con agua"],
+    componentes: ["Arduino UNO y cable USB", "Sensor de nivel de agua (Water Sensor)", "4 LED (verde, azul, amarillo y rojo)", "Buzzer", "Protoboard", "Cables jumper", "Vaso con agua"],
+    ext: "jpeg",
+    portadaPos: "center bottom",
     diagramaTexto:
-      "Un sensor de humedad funciona aquí como sensor de nivel dentro de un vaso con agua: su señal entra por el pin analógico A0 y su alimentación (VCC y GND) viene de la protoboard, que recibe los 5 V y el GND del Arduino. Los cuatro LED están en los pines 5 (verde), 4 (azul), 3 (amarillo) y 2 (rojo). El buzzer va al pin 7.",
+      "Tinkercad no tiene sensor de nivel de agua, así que en el diagrama se usó un sensor de humedad dentro del vaso; funciona igual. Su señal entra por el pin analógico A0 y su alimentación (VCC y GND) viene de la protoboard, que recibe los 5 V y el GND del Arduino. Los cuatro LED van a los pines 2 a 5. En el código final el verde quedó en el pin 5, el azul en el 4, el amarillo en el 3 y el rojo en el 2, y se agregó un buzzer en el pin 7, que no aparece en el diagrama.",
     evidencias: [
-      { titulo: "Montaje del sensor", texto: "Fijamos el sensor dentro del vaso y conectamos los LED y el buzzer a la protoboard." },
-      { titulo: "Llenando el recipiente", texto: "Fuimos agregando agua poco a poco para ver cómo cambia la lectura en el Monitor Serie." },
-      { titulo: "Luces y buzzer según el nivel", texto: "Al subir el agua se encienden en orden el LED verde, el azul, el amarillo y el rojo; con el rojo suena el buzzer." }
+      { titulo: "Los materiales", texto: "Arduino UNO, protoboard, sensor de nivel de agua, cuatro LED (verde, azul, amarillo y rojo) y cables jumper." },
+      { titulo: "Primeros cables", texto: "Se conectan los primeros cables en la protoboard." },
+      { titulo: "Protoboard y Arduino", texto: "Se unen la protoboard y el Arduino UNO con cables de colores." },
+      { titulo: "Revisando la protoboard", texto: "Un compañero acomoda un cable en la protoboard." },
+      { titulo: "Trabajo en equipo", texto: "Los dos integrantes se turnan para hacer las conexiones." },
+      { titulo: "Colocando los LED", texto: "Se ponen en la protoboard los LED verde, azul y amarillo, cerca del Arduino." },
+      { titulo: "Conexiones al Arduino", texto: "Se revisan los cables que van de la protoboard a los pines del Arduino." },
+      { titulo: "Cables al Arduino UNO", texto: "Se conectan los cables a los pines del Arduino UNO, al lado de la protoboard." },
+      { titulo: "Conectando el sensor", texto: "Se conectan los cables al sensor de nivel de agua." },
+      { titulo: "Sensor listo", texto: "El sensor de nivel de agua queda conectado a la protoboard con sus cables." }
     ],
     codigo: `// Medidor de agua con Arduino
 // El sensor mide el nivel del agua; a medida que sube se van encendiendo los LED y, al final, suena el buzzer.
@@ -730,46 +748,62 @@ void loop() {
     lema: "Nadie pasa sin que ella se entere",
     categoria: "Sensor de movimiento",
     descripcion:
-      "Un sensor PIR detecta cuando alguien se mueve frente a él y activa una sirena con luz intermitente. Después de la alarma el sistema espera unos segundos y vuelve a vigilar.",
+      "Un sensor de movimiento PIR vigila el espacio frente a él. Cuando alguien pasa, el Arduino enciende el LED y hace sonar la sirena, y en el Monitor Serie aparece el mensaje \"MOVIMIENTO DETECTADO\". Cuando ya no hay movimiento, la sirena y el LED se apagan.",
     integrantes: ["Miguel Ángel Guzmán Arias", "Danilson Daniel Cáceres Caro"],
-    componentes: ["Arduino UNO", "Sensor PIR HC-SR501", "Buzzer", "LED rojo y resistencia de 220 Ω", "Protoboard y jumpers"],
+    componentes: ["Arduino UNO y cable USB", "Sensor de movimiento PIR HC-SR501", "Sirena (buzzer)", "LED con resistencia", "Protoboard", "Cables jumper"],
+    ext: "jpeg",
+    video: "videos/alarma-movimiento.mp4",
+    videoTexto: "Los estudiantes presentan su alarma: explican el circuito y pasan la mano frente al sensor para activarla.",
     diagramaTexto:
-      "Diagrama pendiente: todavía no se ha cargado la imagen del diagrama de este prototipo.",
+      "El sensor PIR se coloca en la protoboard y su salida va al pin 13 del Arduino (cable verde). La sirena se conecta al pin 12 y el LED, con su resistencia, al pin 11. Los cables rojo y negro llevan 5 V y GND desde el Arduino a las líneas de la protoboard, de donde se alimentan el sensor, el LED y la sirena.",
     evidencias: [
-      { titulo: "Conectando el PIR", texto: "Conectamos el sensor de movimiento, el LED y el buzzer según el diagrama." },
-      { titulo: "Ajuste de sensibilidad", texto: "Movimos la mano frente al sensor y ajustamos el tiempo y la distancia de detección." },
-      { titulo: "Alarma activada", texto: "Al detectar movimiento, la sirena suena con luz intermitente y luego vuelve a vigilar." }
+      { titulo: "Los materiales", texto: "Sirena, protoboard con un LED, sensor PIR con sus cables, Arduino UNO, resistencia y cable USB." },
+      { titulo: "Probando el sensor", texto: "Un estudiante sostiene el sensor PIR conectado a la protoboard y al Arduino para probarlo." },
+      { titulo: "¡Detecta movimiento!", texto: "Al mover la mano frente al sensor, el LED de la protoboard se enciende." },
+      { titulo: "Código y Monitor Serie", texto: "El código en el IDE de Arduino y el Monitor Serie mostrando \"MOVIMIENTO DETECTADO\" cada vez que el sensor ve movimiento." }
     ],
-    codigo: `const int PIR = 2;
-int LED = 13;
-int BUZZER = 8;
+    codigo: `// Proyecto -> Alarma con detector de movimiento
 
+// -------------------------
+// PINES
+// -------------------------
+int sensorPIR = 13;       // salida del sensor de movimiento PIR
+int buzzer = 12;          // sirena
+int led = 11;             // LED de aviso
+
+int movimiento = 0;       // guarda lo que lee el sensor: HIGH = hay movimiento, LOW = no hay
+
+
+// =========================
+// CONFIGURACIÓN INICIAL
+// =========================
 void setup() {
-  pinMode(PIR, INPUT);
-  pinMode(LED, OUTPUT);
-  pinMode(BUZZER, OUTPUT);
-  Serial.begin(9600);
-  delay(10000);            // el PIR necesita unos segundos para calibrarse
+
+  pinMode(sensorPIR, INPUT);    // el sensor envía datos al Arduino
+  pinMode(buzzer, OUTPUT);      // la sirena recibe órdenes del Arduino
+  pinMode(led, OUTPUT);         // el LED también
+  Serial.begin(9600);           // abre el Monitor Serie
 }
 
-void sonarAlarma() {
-  for (int i = 0; i < 6; i++) {
-    tone(BUZZER, 1500);
-    digitalWrite(LED, HIGH);
-    delay(150);
-    tone(BUZZER, 900);
-    digitalWrite(LED, LOW);
-    delay(150);
-  }
-  noTone(BUZZER);
-}
 
+// =========================
+// PROGRAMA PRINCIPAL
+// =========================
 void loop() {
-  if (digitalRead(PIR) == HIGH) {
-    Serial.println("Movimiento detectado");
-    sonarAlarma();
-    delay(3000);           // pausa antes de volver a vigilar
+
+  movimiento = digitalRead(sensorPIR);   // lee el sensor
+
+  if (movimiento == HIGH) {              // alguien se movió frente al sensor
+    digitalWrite(led, HIGH);             // se enciende el LED
+    digitalWrite(buzzer, HIGH);          // suena la sirena
+    Serial.println("MOVIMIENTO DETECTADO");
   }
+  else {                                 // no hay movimiento
+    digitalWrite(led, LOW);              // se apaga el LED
+    digitalWrite(buzzer, LOW);           // se apaga la sirena
+  }
+
+  delay(200);                            // pequeña pausa antes de volver a leer
 }`
   },
 

@@ -416,7 +416,7 @@
         </header>
 
         <div class="detail__intro">
-          <figure class="detail__cover">${foto(p.id, 'portada', `Prototipo terminado: ${p.nombre}`, '', ext0)}</figure>
+          <figure class="detail__cover" style="${p.portadaPos ? `--pos: ${p.portadaPos};` : ''}${p.portadaForma ? `--forma: ${p.portadaForma};` : ''}">${foto(p.id, 'portada', `Prototipo terminado: ${p.nombre}`, '', ext0)}</figure>
           <div>
             <p class="detail__desc">${p.descripcion}</p>
             <h4>Materiales</h4>

@@ -1,13 +1,13 @@
 ﻿Carpeta del prototipo: alarma-movimiento
 
-Pon aqui las fotos con estos nombres (la extension puede ser .jpg, .jpeg, .png o .webp):
+Fotos (extension .jpeg):
 
-  portada.jpg       foto del prototipo terminado
-  diagrama.png      diagrama de conexiones (Tinkercad o dibujo)
-  evidencia-1.jpg   foto del proceso 1
-  evidencia-2.jpg   foto del proceso 2
-  evidencia-3.jpg   foto del proceso 3
+  diagrama.jpeg       diagrama de conexiones (Tinkercad)
+  evidencia-1.jpeg    materiales
+  evidencia-2.jpeg    probando el sensor PIR
+  evidencia-3.jpeg    el LED se enciende al detectar movimiento
+  evidencia-4.jpeg    codigo y Monitor Serie
+  portada.jpeg        cuadro del video (segundo 34,5); se puede cambiar por una foto
 
-El texto que acompana cada evidencia se escribe en js/proyectos.js (campo "evidencias").
-Si agregas mas fotos (evidencia-4.jpg...), agrega tambien su texto en esa lista.
-Mientras no haya foto, la pagina muestra una imagen de relleno.
+Video: videos/alarma-movimiento.mp4 (aparece antes del diagrama y de las evidencias).
+Con 4 a 9 fotos la pagina usa el visor estilo cine.

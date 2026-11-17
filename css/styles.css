@@ -1116,7 +1116,8 @@ a { color: inherit; }
 }
 .detail__cover { margin: 0; }
 .detail__cover img {
-  width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block;
+  width: 100%; aspect-ratio: var(--forma, 16 / 10); object-fit: cover; display: block;
+  object-position: var(--pos, center);   /* portadaForma y portadaPos en proyectos.js cambian el encuadre */
   border-radius: 14px; border: 1px solid var(--line);
   box-shadow: 0 14px 34px rgba(0,0,0,.28);
 }
