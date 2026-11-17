@@ -776,15 +776,15 @@ void loop() {
   {
     id: "matriz-joystick",
     nombre: "Matriz joystick",
-    lema: "Un punto de luz que obedece a la mano",
+    lema: "La culebrita en una matriz de LED",
     categoria: "Entrada analógica",
     descripcion:
-      "Una matriz de LED 8x8 donde un punto luminoso se desplaza según el movimiento del joystick. El reto fue entender que el joystick no entrega una posición, sino dos valores de 0 a 1023 que hay que traducir a coordenadas.",
+      "El juego de la culebrita en una matriz de LED 8x8. Con el joystick se cambia la dirección de la culebra; cada vez que se come el punto que parpadea, crece un LED y va más rápido. Si choca con la pared o consigo misma, la pantalla parpadea y muestra el puntaje con un LED por cada comida; para volver a jugar se presiona el joystick. El reto fue traducir los valores analógicos del joystick a cuatro direcciones.",
     integrantes: ["Alisson Sarith Cuervo Pulido", "Neymis Taliana Cañas Chaverra"],
     componentes: ["Arduino UNO", "Matriz LED 8x8 con MAX7219", "Módulo joystick", "Protoboard y jumpers"],
     ext: "jpeg",
     diagramaTexto:
-      "El módulo joystick recibe +5 V y GND y entrega sus ejes (VRx y VRy) y el pulsador SW; en el diagrama la salida VRy se rotula A1. La matriz LED 8x8 con MAX7219 usa cinco cables: VCC, GND, DIN, CS y CLK, que llegan a la hilera de pines digitales del Arduino. La protoboard distribuye la alimentación.",
+      "El módulo joystick recibe +5 V y GND y entrega sus ejes (VRx y VRy) y el pulsador SW; en el diagrama la salida VRy se rotula A1. La matriz LED 8x8 con MAX7219 usa cinco cables: VCC, GND, DIN, CS y CLK, que llegan a la hilera de pines digitales del Arduino. La protoboard distribuye la alimentación. En el código final la matriz usa DIN en el 12, CLK en el 11 y CS en el 10, y el joystick se alimenta con 3.3 V: VRx en A0, VRy en A1 y SW en el pin 2.",
     evidencias: [
       { titulo: "Componentes", texto: "Cables, matriz LED 8x8, módulo joystick, Arduino UNO y cable USB sobre la mesa." },
       { titulo: "Preparando la matriz", texto: "Se sostiene la matriz LED 8x8 para empezar a conectarla." },
@@ -794,35 +794,242 @@ void loop() {
       { titulo: "Trabajando en el computador", texto: "Una estudiante trabaja en el computador durante el montaje." },
       { titulo: "Circuito armado", texto: "Una estudiante revisa el circuito armado: Arduino, matriz LED y cables conectados." }
     ],
-    codigo: `#include <LedControl.h>
+    codigo: `// Proyecto -> Juego de la culebrita (matriz LED 8x8 + joystick)
+#include "LedControl.h"           // librería para manejar la matriz con el MAX7219
 
-// DIN = 11, CLK = 13, CS = 10, una sola matriz
-LedControl matriz = LedControl(11, 13, 10, 1);
+LedControl lc = LedControl(12, 11, 10, 1);   // DIN en el 12, CLK en el 11, CS en el 10, una sola matriz
 
-int PIN_X = A0;   // eje horizontal del joystick
-int PIN_Y = A1;   // eje vertical del joystick
+// -------------------------
+// PINES DEL JOYSTICK
+// -------------------------
+const int SW_pin = 2;             // botón del joystick (se presiona hacia abajo)
+const int xpin = A0;              // eje horizontal (VRx)
+const int ypin = A1;              // eje vertical (VRy)
 
-int columna = 3;        // posicion inicial del punto
-int fila = 3;
+// El joystick va a 3.3 V, por eso sus valores llegan más o menos hasta 660
+const int BAJO = 150;             // menos de esto: palanca a la izquierda o arriba
+const int ALTO = 520;             // más de esto: palanca a la derecha o abajo
 
+// -------------------------
+// VARIABLES DEL JUEGO
+// -------------------------
+int cuerpoX[64], cuerpoY[64];     // posición de cada parte de la culebra (máximo 64 LED)
+int largo;                        // cuántos LED mide la culebra
+int dirX, dirY;                   // dirección en la que va
+int sigX, sigY;                   // dirección que pidió el jugador con el joystick
+int comidaX, comidaY;             // dónde está la comida
+int puntos;                       // comidas que lleva
+int velocidad;                    // milisegundos entre pasos (menos = más rápido)
+
+unsigned long ultimoMovimiento = 0;   // momento del último paso de la culebra
+unsigned long ultimoParpadeo = 0;     // momento del último parpadeo de la comida
+bool comidaVisible = true;            // la comida se prende y se apaga
+
+
+// =========================
+// CONFIGURACIÓN INICIAL
+// =========================
 void setup() {
-  matriz.shutdown(0, false);   // despierta la matriz
-  matriz.setIntensity(0, 8);   // brillo medio (0 a 15)
-  matriz.clearDisplay(0);
+  Serial.begin(9600);                 // abre el Monitor Serie para ver los puntos
+  pinMode(SW_pin, INPUT_PULLUP);      // botón con resistencia interna: suelto = HIGH, presionado = LOW
+
+  lc.shutdown(0, false);              // despierta la matriz
+  lc.setIntensity(0, 8);              // brillo medio (0 a 15)
+  lc.clearDisplay(0);                 // apaga todos los LED
+
+  randomSeed(analogRead(A5));         // así la comida no sale siempre en el mismo orden
+  nuevoJuego();
 }
 
+
+// =========================
+// PROGRAMA PRINCIPAL
+// =========================
 void loop() {
-  int valorX = analogRead(PIN_X);   // 0 a 1023
-  int valorY = analogRead(PIN_Y);
+  leerJoystick();                     // revisa hacia dónde mueve el jugador la palanca
+  unsigned long ahora = millis();     // tiempo desde que se prendió el Arduino
 
-  // map convierte el rango del joystick al rango de la matriz
-  columna = map(valorX, 0, 1023, 0, 7);
-  fila    = map(valorY, 0, 1023, 0, 7);
+  // La comida parpadea cada 200 ms
+  if (ahora - ultimoParpadeo > 200) {
+    comidaVisible = !comidaVisible;   // si estaba prendida se apaga, y al revés
+    ultimoParpadeo = ahora;
+    dibujar();
+  }
 
-  matriz.clearDisplay(0);
-  matriz.setLed(0, fila, columna, true);
+  // La culebra avanza un paso cuando pasa el tiempo de "velocidad"
+  if (ahora - ultimoMovimiento > (unsigned long)velocidad) {
+    ultimoMovimiento = ahora;
+    mover();
+  }
+}
 
-  delay(80);   // sin esta pausa el punto viaja demasiado rapido
+
+// =========================
+// EMPEZAR UN JUEGO NUEVO
+// =========================
+void nuevoJuego() {
+  largo = 1;                // la culebra empieza siendo un solo punto
+  cuerpoX[0] = 3;           // en la columna 3
+  cuerpoY[0] = 4;           // y la fila 4
+  dirX = 1; dirY = 0;       // arranca hacia la derecha
+  sigX = 1; sigY = 0;
+  puntos = 0;
+  velocidad = 450;          // un paso cada 450 ms al comienzo
+  ponerComida();
+  dibujar();
+  ultimoMovimiento = millis();
+  Serial.println("¡Nuevo juego!");
+}
+
+
+// =========================
+// LEER EL JOYSTICK
+// =========================
+void leerJoystick() {
+  int lx = analogRead(xpin);          // valor del eje X
+  int ly = analogRead(ypin);          // valor del eje Y
+
+  // Si mide 1 puede devolverse; si es más larga, no puede ir en reversa
+  bool puedeVolver = (largo == 1);
+
+  if (lx > ALTO && (dirX != -1 || puedeVolver))      { sigX = 1;  sigY = 0; }   // derecha
+  else if (lx < BAJO && (dirX != 1 || puedeVolver))  { sigX = -1; sigY = 0; }   // izquierda
+  else if (ly > ALTO && (dirY != -1 || puedeVolver)) { sigX = 0;  sigY = 1; }   // abajo
+  else if (ly < BAJO && (dirY != 1 || puedeVolver))  { sigX = 0;  sigY = -1; }  // arriba
+}
+
+
+// =========================
+// MOVER LA CULEBRA
+// =========================
+void mover() {
+  dirX = sigX;                        // toma la dirección que pidió el jugador
+  dirY = sigY;
+
+  int nx = cuerpoX[0] + dirX;         // nueva posición de la cabeza
+  int ny = cuerpoY[0] + dirY;
+
+  // Choque con la pared: se sale de la matriz (0 a 7)
+  if (nx < 0 || nx > 7 || ny < 0 || ny > 7) {
+    finJuego();
+    return;
+  }
+
+  bool come = (nx == comidaX && ny == comidaY);   // ¿la cabeza llega a la comida?
+
+  // Choque consigo misma: se revisa el cuerpo
+  // (si no come, la cola se mueve, así que la última parte no cuenta)
+  int revisar = largo - 1;
+  if (come) {
+    revisar = largo;
+  }
+  for (int i = 0; i < revisar; i++) {
+    if (cuerpoX[i] == nx && cuerpoY[i] == ny) {
+      finJuego();
+      return;
+    }
+  }
+
+  if (come) largo++;                  // crece un punto
+
+  // El cuerpo sigue a la cabeza: cada parte toma el lugar de la anterior
+  for (int i = largo - 1; i > 0; i--) {
+    cuerpoX[i] = cuerpoX[i - 1];
+    cuerpoY[i] = cuerpoY[i - 1];
+  }
+  cuerpoX[0] = nx;                    // la cabeza pasa a la nueva posición
+  cuerpoY[0] = ny;
+
+  if (come) {
+    puntos++;
+    Serial.print("¡Comida! Puntos: ");
+    Serial.print(puntos);
+    Serial.print("   Largo: ");
+    Serial.println(largo);
+
+    if (largo == 64) {                // llenó los 64 LED de la matriz
+      Serial.println("¡GANASTE! Llenaste toda la pantalla");
+      finJuego();
+      return;
+    }
+    ponerComida();
+    if (velocidad > 150) velocidad -= 20;   // cada comida la hace 20 ms más rápida
+  }
+
+  dibujar();
+}
+
+
+// =========================
+// ¿ESE LUGAR ES PARTE DE LA CULEBRA?
+// =========================
+bool estaEnCulebra(int x, int y) {
+  for (int i = 0; i < largo; i++) {
+    if (cuerpoX[i] == x && cuerpoY[i] == y) return true;
+  }
+  return false;
+}
+
+
+// =========================
+// PONER LA COMIDA
+// =========================
+void ponerComida() {
+  do {
+    comidaX = random(8);              // columna al azar de 0 a 7
+    comidaY = random(8);              // fila al azar de 0 a 7
+  } while (estaEnCulebra(comidaX, comidaY));   // repite si cayó encima de la culebra
+}
+
+
+// =========================
+// DIBUJAR EN LA MATRIZ
+// =========================
+void dibujar() {
+  byte filasLed[8] = {0, 0, 0, 0, 0, 0, 0, 0};   // cada fila es un byte: 8 bits = 8 LED
+
+  // Prende el bit de cada parte de la culebra en su fila
+  for (int i = 0; i < largo; i++) {
+    filasLed[cuerpoY[i]] |= (B10000000 >> cuerpoX[i]);
+  }
+  // Prende la comida solo cuando le toca estar visible
+  if (comidaVisible) {
+    filasLed[comidaY] |= (B10000000 >> comidaX);
+  }
+  // Envía las 8 filas a la matriz
+  for (int f = 0; f < 8; f++) {
+    lc.setRow(0, f, filasLed[f]);
+  }
+}
+
+
+// =========================
+// FIN DEL JUEGO
+// =========================
+void finJuego() {
+  Serial.print("Fin del juego. Puntos: ");
+  Serial.println(puntos);
+
+  // Parpadea toda la pantalla 3 veces
+  for (int r = 0; r < 3; r++) {
+    for (int f = 0; f < 8; f++) lc.setRow(0, f, B11111111);   // todos prendidos
+    delay(250);
+    lc.clearDisplay(0);                                       // todos apagados
+    delay(250);
+  }
+
+  // Muestra el puntaje: un LED prendido por cada comida
+  for (int i = 0; i < puntos && i < 64; i++) {
+    lc.setLed(0, i / 8, i % 8, true);   // fila = i / 8, columna = resto de i / 8
+  }
+
+  Serial.println("Presiona el joystick para jugar otra vez");
+  while (digitalRead(SW_pin) == HIGH) { }   // espera a que presionen el botón
+  delay(300);
+  while (digitalRead(SW_pin) == LOW) { }    // espera a que lo suelten
+
+  lc.clearDisplay(0);
+  nuevoJuego();
 }`
   },
 
