@@ -495,15 +495,22 @@
      FOOTER
      ============================================================ -->
 <footer class="footer">
-  <div class="wrap footer__grid">
-    <div>
-      <p class="footer__quote">La robótica educativa no se trata de que el robot funcione,<br>sino de que el estudiante sepa explicar por qué funciona.</p>
-    </div>
-    <div class="footer__meta">
-      <p><strong>Maicol Alexander Cruz Cruz</strong></p>
-      <p>Licenciatura en Informática · UPTC</p>
-      <p>I.E. Técnica José Cayetano Vásquez · Ciénega, Boyacá</p>
-      <p>2026</p>
+  <div class="wrap">
+    <!-- Tarjeta del autor (foto en img/autor/maicol.webp) -->
+    <article class="autor">
+      <div class="autor__foto">
+        <img src="img/autor/maicol.webp" alt="Maicol Alexander Cruz Cruz" loading="lazy" width="220" height="220">
+      </div>
+      <div class="autor__info">
+        <span class="autor__eyebrow">Autor de la estrategia</span>
+        <h2 class="autor__name">Maicol Alexander Cruz Cruz</h2>
+        <p class="autor__rol">Docente en formación · Licenciatura en Informática, UPTC</p>
+        <ul class="autor__chips">
+          <li><span aria-hidden="true">🎓</span> Código UPTC: 202220426</li>
+          <li><a href="mailto:maicol.cruz01@uptc.edu.co"><span aria-hidden="true">✉</span> maicol.cruz01@uptc.edu.co</a></li>
+          <li><span aria-hidden="true">📍</span> I.E. Técnica José Cayetano Vásquez · Ciénega, Boyacá</li>
+        </ul>
+        <p class="autor__desc">Diseñó y desarrolló la estrategia con los estudiantes de grado octavo y creó este sitio para documentar el proceso.</p>
       <div class="social">
         <a href="https://www.instagram.com/maic.alexanderc/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.58 0 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85s0 3.58-.07 4.85c-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.65.07-4.85.07s-3.58 0-4.85-.07c-3.26-.15-4.77-1.7-4.92-4.92C2.2 15.58 2.2 15.2 2.2 12s0-3.58.07-4.85C2.42 3.92 3.94 2.38 7.15 2.27 8.42 2.2 8.8 2.2 12 2.2ZM12 0C8.74 0 8.33 0 7.05.07 2.7.27.27 2.69.07 7.05 0 8.33 0 8.74 0 12s0 3.67.07 4.95c.2 4.36 2.62 6.78 6.98 6.98C8.33 24 8.74 24 12 24s3.67 0 4.95-.07c4.35-.2 6.78-2.62 6.98-6.98C24 15.67 24 15.26 24 12s0-3.67-.07-4.95c-.2-4.35-2.62-6.78-6.98-6.98C15.67 0 15.26 0 12 0Zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32ZM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88Z"/></svg>
@@ -515,7 +522,9 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.77V21h-4v-5.5c0-1.31-.02-3-1.9-3-1.9 0-2.2 1.43-2.2 2.9V21H9z"/></svg>
         </a>
       </div>
-    </div>
+      </div>
+    </article>
+    <p class="footer__quote">«La robótica educativa no se trata de que el robot funcione, sino de que el estudiante sepa explicar por qué funciona».</p>
   </div>
   <!-- Logos: img/logos/uptc.svg, licenciatura-informatica.svg y colegio.png (si falta uno, no se muestra) -->
   <div class="wrap footer__logos">
@@ -525,7 +534,7 @@
     <span class="flogo flogo--ancho">
       <img src="img/logos/licenciatura-informatica.svg" alt="Licenciatura en Informática, UPTC" loading="lazy" onerror="this.parentElement.hidden=true">
     </span>
-    <span class="flogo">
+    <span class="flogo flogo--escudo">
       <img src="img/logos/colegio.png" alt="Institución Educativa Técnica José Cayetano Vásquez" loading="lazy" onerror="this.parentElement.hidden=true">
     </span>
   </div>
